@@ -1,0 +1,28 @@
+# Core backend
+fastapi
+uvicorn[standard]
+sqlmodel
+python-dotenv
+pydantic
+
+# LLM + agentes
+google-generativeai
+langchain
+langchain-google-genai
+langgraph
+
+# RAG
+chromadb
+sentence-transformers   # fallback offline de embeddings
+
+# Biomarcadores (track ML también los usa)
+openai-whisper
+librosa
+praat-parselmouth
+webrtcvad
+spacy
+# despues: python -m spacy download es_core_news_lg
+scikit-learn
+xgboost
+pandas
+numpy

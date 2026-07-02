@@ -1,0 +1,62 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Test Wearable — Web Bluetooth</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+  button { font-size: 16px; padding: 10px 16px; margin: 6px 4px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; }
+  #hr { font-size: 48px; font-weight: 700; }
+  .card { background: #f5f5f7; border-radius: 12px; padding: 16px; margin-top: 12px; }
+  #sos { color: #c00; font-weight: 700; }
+  small { color: #666; }
+</style>
+
+<h2>⌚ Wearable Don José — prueba BLE</h2>
+<p><small>Chrome/Edge de escritorio. Requiere el ESP32 con el firmware corriendo.</small></p>
+
+<button id="connect">Conectar</button>
+<button id="remind">Enviar recordatorio (vibrar)</button>
+
+<div class="card">
+  <div>❤️ FC: <span id="hr">--</span> bpm</div>
+  <div>👣 Pasos: <span id="steps">--</span></div>
+  <div>🏃 Actividad: <span id="act">--</span></div>
+  <div>🆘 <span id="sos">sin alertas</span></div>
+</div>
+
+<script>
+  const SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+  const BIO = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+  const SOS = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+  const CMD = "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
+  let cmdChar = null;
+
+  document.getElementById("connect").onclick = async () => {
+    const dev = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE] }],
+    });
+    const server = await dev.gatt.connect();
+    const svc = await server.getPrimaryService(SERVICE);
+
+    const bio = await svc.getCharacteristic(BIO);
+    await bio.startNotifications();
+    bio.addEventListener("characteristicvaluechanged", (e) => {
+      const d = JSON.parse(new TextDecoder().decode(e.target.value));
+      document.getElementById("hr").textContent = d.hr;
+      document.getElementById("steps").textContent = d.steps;
+      document.getElementById("act").textContent = d.act;
+      if (d.fall) document.getElementById("sos").textContent = "⚠️ posible caída";
+    });
+
+    const sos = await svc.getCharacteristic(SOS);
+    await sos.startNotifications();
+    sos.addEventListener("characteristicvaluechanged", () => {
+      document.getElementById("sos").textContent = "🆘 SOS ACTIVADO";
+    });
+
+    cmdChar = await svc.getCharacteristic(CMD);
+  };
+
+  document.getElementById("remind").onclick = async () => {
+    if (cmdChar) await cmdChar.writeValue(new TextEncoder().encode('{"cmd":"remind"}'));
+  };
+</script>

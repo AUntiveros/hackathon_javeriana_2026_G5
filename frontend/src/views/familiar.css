@@ -1,0 +1,66 @@
+.familiar__estado {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.familiar__emoji {
+  font-size: 2.6rem;
+}
+
+.familiar__estado p {
+  font-size: 1rem;
+  color: #52514e;
+  line-height: 1.4;
+}
+
+.familiar__destacado {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #E76F51;
+  margin-bottom: 0.25rem;
+}
+
+.tarjeta > p {
+  font-size: 1rem;
+  color: #52514e;
+  line-height: 1.45;
+}
+
+.familiar__llamar {
+  display: block;
+  margin-top: 0.8rem;
+  text-align: center;
+  min-height: 60px;
+  line-height: 60px;
+  border-radius: 999px;
+  background: #E76F51;
+  color: #FFF8F0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 5px 0 #B34F37;
+}
+
+.familiar__llamar:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #B34F37;
+}
+
+.familiar__temas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-size: 1.02rem;
+  color: #3E322C;
+  line-height: 1.4;
+}
+
+.familiar__tip {
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+  color: #8A7468;
+  border-top: 2px solid #F1DECB;
+  padding-top: 0.6rem;
+}

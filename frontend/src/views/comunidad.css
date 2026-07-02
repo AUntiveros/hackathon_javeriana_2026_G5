@@ -1,0 +1,79 @@
+.comunidad__sub {
+  font-size: 0.9rem;
+  color: #8A7468;
+  margin-bottom: 0.7rem;
+}
+
+.comunidad__pares {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.comunidad__par {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid #F1DECB;
+  padding-bottom: 0.7rem;
+}
+
+.comunidad__par:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.comunidad__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.comunidad__info strong {
+  font-size: 1.05rem;
+  color: #3E322C;
+}
+
+.comunidad__info small {
+  font-size: 0.9rem;
+  color: #8A7468;
+}
+
+.comunidad__afinidad {
+  font-size: 0.85rem;
+  color: #E76F51;
+  font-weight: 700;
+}
+
+.comunidad__boton {
+  min-height: 48px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 999px;
+  background: #E76F51;
+  color: #FFF8F0;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #B34F37;
+}
+
+.comunidad__boton:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #B34F37;
+}
+
+.comunidad__ok {
+  color: #0a7a0a;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+.comunidad__evento {
+  font-size: 1rem;
+  color: #52514e;
+  line-height: 1.5;
+}

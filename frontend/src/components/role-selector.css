@@ -1,0 +1,43 @@
+.roles {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.roles::-webkit-scrollbar { display: none; }
+
+.roles__chip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 52px;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 3px solid #F4A261;
+  background: #FFFFFF;
+  color: #5C4B44;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.roles__chip--activo {
+  background: #E76F51;
+  border-color: #E76F51;
+  color: #FFF8F0;
+}
+
+.roles__chip:focus-visible {
+  outline: 4px solid #5C4B44;
+  outline-offset: 2px;
+}
+
+.roles__icono {
+  font-size: 1.4rem;
+}

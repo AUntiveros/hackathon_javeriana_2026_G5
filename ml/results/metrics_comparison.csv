@@ -1,0 +1,7 @@
+metric,baseline,ses,delta
+auc,0.7459,0.7502,0.0044
+f1,0.6835,0.6723,-0.0112
+sensitivity,0.6778,0.6667,-0.0111
+specificity,0.6944,0.6833,-0.0111
+equal_opportunity_gap,0.0495,0.0562,0.0067
+fpr_gap,0.1648,0.1477,-0.0171

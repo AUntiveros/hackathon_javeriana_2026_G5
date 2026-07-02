@@ -1,0 +1,49 @@
+{
+  "patient": {
+    "id": 1,
+    "nombre": "José Mamani Quispe",
+    "apodo": "Don José",
+    "edad": 78,
+    "sexo": "M",
+    "ses_metadata": {
+      "escolaridad": "primaria_incompleta",
+      "zona": "rural",
+      "idh_distrital": 0.42,
+      "lengua_materna": "quechua",
+      "bilingue": true,
+      "ocupacion_historica": "agricultor",
+      "reserva_cognitiva_est": "baja"
+    },
+    "personalidad": "tranquilo, orgulloso de su chacra, devoto, le gusta contar historias",
+    "diagnostico": "Alzheimer leve (etapa temprana)",
+    "rutina_base": {
+      "08:00": "despertar y check-in",
+      "08:30": "medicacion (donepezilo)",
+      "10:00": "actividad cognitiva/reminiscencia",
+      "13:00": "almuerzo",
+      "16:00": "caminata corta",
+      "18:00": "contacto familiar",
+      "20:00": "cierre del dia"
+    }
+  },
+  "pkg_nodes": [
+    {"id": "n1", "tipo": "persona", "nombre": "María", "atributos": "esposa fallecida en 2019, se conocieron en la fiesta del pueblo, tocaba el charango", "relacion_paciente": "esposa"},
+    {"id": "n2", "tipo": "persona", "nombre": "Rosa", "atributos": "hija mayor, vive en Cusco, es profesora, lo llama los domingos", "relacion_paciente": "hija"},
+    {"id": "n3", "tipo": "persona", "nombre": "Sofía", "atributos": "nieta, 19 años, estudia enfermería, muy cercana, le manda audios", "relacion_paciente": "nieta"},
+    {"id": "n4", "tipo": "persona", "nombre": "Mateo", "atributos": "bisnieto, 4 años, cumpleaños el 15 de julio", "relacion_paciente": "bisnieto"},
+    {"id": "n5", "tipo": "lugar", "nombre": "la chacra", "atributos": "terreno donde cultivaba papa y maíz por 40 años, su mayor orgullo"},
+    {"id": "n6", "tipo": "objeto", "nombre": "sombrero de paja", "atributos": "regalo de María, lo usa todos los días, guardado junto a la puerta"},
+    {"id": "n7", "tipo": "objeto", "nombre": "pastilla azul (donepezilo)", "atributos": "medicamento para la memoria, se toma en el desayuno"},
+    {"id": "n8", "tipo": "evento", "nombre": "boda con María", "atributos": "1968, en la iglesia del pueblo, hubo banda de músicos y baile de huayno"},
+    {"id": "n9", "tipo": "interes", "nombre": "música criolla y huayno", "atributos": "le encanta escuchar y cantar, se anima con el charango"},
+    {"id": "n10", "tipo": "interes", "nombre": "fútbol", "atributos": "hincha de Cienciano, recuerda la Copa Sudamericana 2003"},
+    {"id": "n11", "tipo": "rutina", "nombre": "caminata de la tarde", "atributos": "sale a caminar cerca de casa, riesgo de desorientarse si se aleja"}
+  ],
+  "pkg_edges": [
+    {"src": "n1", "dst": "n8", "relacion": "protagonista_de"},
+    {"src": "n1", "dst": "n6", "relacion": "regalo_de"},
+    {"src": "n2", "dst": "n3", "relacion": "madre_de"},
+    {"src": "n3", "dst": "n4", "relacion": "prima_de"},
+    {"src": "n1", "dst": "n9", "relacion": "compartia_interes"}
+  ]
+}

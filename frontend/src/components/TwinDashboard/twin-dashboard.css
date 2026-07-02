@@ -1,0 +1,111 @@
+.twin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+/* ---------- stat tiles ---------- */
+
+.twin__tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.twin__tile {
+  background: #FFFFFF;
+  border: 3px solid #F1DECB;
+  border-radius: 16px;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.twin__tile--alerta {
+  border-color: #F4A261;
+}
+
+.twin__tile-titulo {
+  font-size: 0.95rem;
+  color: #8A7468;
+  font-weight: 600;
+}
+
+.twin__tile-valor {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #3E322C;
+  line-height: 1.1;
+}
+
+.twin__tile-nota {
+  font-size: 0.85rem;
+  color: #8A7468;
+}
+
+/* ---------- charts ---------- */
+
+.twin__chart h2 {
+  margin-bottom: 0.1rem;
+}
+
+.twin__sub {
+  font-size: 0.9rem;
+  color: #8A7468;
+  margin-bottom: 0.5rem;
+}
+
+.twin__leyenda {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: #52514e;
+  margin-top: 0.25rem;
+}
+
+.twin__leyenda i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.35rem;
+  vertical-align: -1px;
+}
+
+/* ---------- alertas ---------- */
+
+.twin__alertas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.twin__alerta {
+  border-left: 5px solid;
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.twin__alerta-tag {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.twin__alerta strong {
+  font-size: 1.05rem;
+  color: #3E322C;
+}
+
+.twin__alerta p {
+  font-size: 0.95rem;
+  color: #52514e;
+  line-height: 1.35;
+}

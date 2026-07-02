@@ -1,0 +1,25 @@
+/* Base global — cálida, alto contraste, fuente grande */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 18px; /* base grande para adultos mayores */
+  color: #3E322C;
+}
+
+body {
+  background: #FFF3E4;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  touch-action: manipulation;
+}

@@ -1,0 +1,76 @@
+.agenda {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.agenda__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 12px;
+}
+
+.agenda__item--hecho {
+  opacity: 0.55;
+}
+
+.agenda__hora {
+  font-weight: 800;
+  color: #5C4B44;
+  font-size: 0.95rem;
+  min-width: 3.2rem;
+}
+
+.agenda__icono {
+  font-size: 1.3rem;
+}
+
+.agenda__cuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.agenda__cuerpo strong {
+  font-size: 1.02rem;
+  color: #3E322C;
+}
+
+.agenda__cuerpo small {
+  font-size: 0.85rem;
+  color: #8A7468;
+}
+
+.agenda__boton {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 999px;
+  background: #E76F51;
+  color: #FFF8F0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #B34F37;
+}
+
+.agenda__boton:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #B34F37;
+}
+
+.agenda__hecho {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0ca30c;
+  padding: 0 0.7rem;
+}
+
+.consejo p {
+  font-size: 1.02rem;
+  line-height: 1.45;
+  color: #52514e;
+}

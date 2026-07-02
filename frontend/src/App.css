@@ -1,0 +1,61 @@
+/* ============================================================
+   Layout raíz — mobile-first, adulto mayor
+   ============================================================ */
+
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 2rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.app__header {
+  text-align: center;
+}
+
+.app__header h1 {
+  font-size: 2.2rem;
+  color: #5C4B44;
+  letter-spacing: 0.02em;
+}
+
+.app__header p {
+  font-size: 1.1rem;
+  color: #8A7468;
+}
+
+/* ---------- piezas compartidas entre vistas ---------- */
+
+.tarjeta {
+  width: 100%;
+  background: #FFFFFF;
+  border: 3px solid #F1DECB;
+  border-radius: 20px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 4px 0 #F1DECB;
+}
+
+.tarjeta h2 {
+  font-size: 1.25rem;
+  color: #5C4B44;
+  margin-bottom: 0.6rem;
+}
+
+.vista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+  flex: 1;
+}
+
+.cargando {
+  color: #8A7468;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 2rem 0;
+}
