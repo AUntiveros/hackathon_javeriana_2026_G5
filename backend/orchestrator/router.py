@@ -22,9 +22,13 @@ def route(rol: str, mensaje: str, patient_id: int = 1) -> dict:
         docs = tools.consultar_pkg(mensaje, k=3)
         contexto_parts.append("Memoria del paciente:\n" + "\n".join(f"- {d}" for d in docs))
 
-    if "reporte_clinico" in cfg.tools:
-        rep = tools.reporte_clinico(patient_id)
-        contexto_parts.append(f"Datos clínicos reales (usa solo estos): {rep}")
+    if "rutina_hoy" in cfg.tools:
+        rut = tools.rutina_hoy(patient_id)
+        contexto_parts.append(f"Rutina de hoy y su estado: {rut}")
+
+    if "reporte_adherencia" in cfg.tools:
+        rep = tools.reporte_adherencia(patient_id)
+        contexto_parts.append(f"Datos reales de adherencia/vitales (usa solo estos, NO evalúes deterioro cognitivo): {rep}")
 
     if "sugerir_contacto" in cfg.tools:
         sug = tools.sugerir_contacto(patient_id)

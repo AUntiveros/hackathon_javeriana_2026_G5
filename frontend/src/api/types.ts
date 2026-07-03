@@ -95,3 +95,61 @@ export interface WearableData {
   pasos: number;
   conectado: boolean;
 }
+
+// ============================================================
+// CONTRATO v2 (post-pivote) — foco: rutina + criticidad + alertas
+// Migrar aquí. Lo de arriba (twin cognitivo, señales clínicas) queda
+// DEPRECADO: el hackathon prohíbe evaluar deterioro cognitivo.
+// ============================================================
+
+/** GET /routine/:id/today → { actividades: ActividadV2[] } */
+export interface ActividadV2 {
+  id: number;
+  nombre: string;
+  tipo: 'medicacion' | 'comida' | 'cita' | 'autocuidado' | 'hobby' | 'actividad';
+  hora: string;            // "08:30"
+  criticidad: number;      // 0-1
+  estado: 'pendiente' | 'confirmada' | 'omitida' | 'reprogramada';
+  n_recordatorios: number;
+  n_rechazos: number;
+}
+
+/** Salida del motor de criticidad (GET /actividades/:id/evaluar, POST /routine/:id/procesar) */
+export interface DecisionCriticidad {
+  accion: 'soltar' | 'sugerir_suave' | 'recordar_firme' | 'escalar_cuidador';
+  insistencia: number;
+  alertar_cuidador: boolean;
+  tono: string;
+  mensaje?: string;
+  retraso_min?: number;
+}
+
+/** GET /alertas/:id → AlertaCuidador[] */
+export interface AlertaCuidador {
+  id: number;
+  nivel: 'bajo' | 'medio' | 'alto';
+  motivo: string;
+  ts: string;
+  atendida: boolean;
+}
+
+/** GET /reporte/:id/adherencia */
+export interface Adherencia {
+  fecha: string;
+  total_actividades: number;
+  confirmadas: number;
+  adherencia_pct: number;
+  criticas_total: number;
+  criticas_confirmadas: number;
+  adherencia_critica_pct: number;
+  alertas_pendientes: number;
+}
+
+/** POST /vitals → estimación; GET /vitals/:id → VitalV2[] */
+export interface VitalV2 {
+  ts?: string;
+  hr: number;
+  hrv_ms: number;
+  bp_sys_est?: number;
+  bp_dia_est?: number;
+}

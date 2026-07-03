@@ -6,13 +6,18 @@
 
 import * as mock from './mock';
 import type {
+  ActividadV2,
+  Adherencia,
   Alerta,
+  AlertaCuidador,
   ChatRequest,
   ChatResponse,
+  DecisionCriticidad,
   RoutineEvent,
   SenalClinica,
   Snapshot,
   TrendPoint,
+  VitalV2,
 } from './types';
 
 const API_URL: string | undefined = import.meta.env.VITE_API_URL;
@@ -61,4 +66,49 @@ export function getSenalesClinicas(patientId: number): Promise<SenalClinica[]> {
   return API_URL ? get(`/twin/${patientId}/signals`) : mock.getSenalesClinicas(patientId);
 }
 
-export const PATIENT_ID = 1; // Don José — único paciente de la demo
+// ============================================================
+// API v2 (post-pivote) — rutina, criticidad, alertas, adherencia, vitales.
+// Requieren VITE_API_URL (backend real). El mock v2 se añade en mock.ts.
+// ============================================================
+
+export async function getActividadesHoy(patientId: number): Promise<{ actividades: ActividadV2[] }> {
+  return get(`/routine/${patientId}/today`);
+}
+
+export function procesarRutina(patientId: number, receptividad = 0.6): Promise<{ recordatorios: DecisionCriticidad[] }> {
+  return post(`/routine/${patientId}/procesar`, { receptividad });
+}
+
+export function evaluarActividad(actId: number, receptividad = 0.6): Promise<DecisionCriticidad> {
+  return get(`/actividades/${actId}/evaluar?receptividad=${receptividad}`);
+}
+
+export function confirmarActividad(actId: number): Promise<unknown> {
+  return post(`/actividades/${actId}/confirmar`, {});
+}
+
+export function rechazarActividad(actId: number): Promise<unknown> {
+  return post(`/actividades/${actId}/rechazar`, {});
+}
+
+export function getAlertas(patientId: number): Promise<AlertaCuidador[]> {
+  return get(`/alertas/${patientId}`);
+}
+
+export function atenderAlerta(alertaId: number): Promise<unknown> {
+  return post(`/alertas/${alertaId}/atender`, {});
+}
+
+export function getAdherencia(patientId: number): Promise<Adherencia> {
+  return get(`/reporte/${patientId}/adherencia`);
+}
+
+export function postVital(patientId: number, hr: number, hrv_ms = 0): Promise<unknown> {
+  return post('/vitals', { patient_id: patientId, hr, hrv_ms });
+}
+
+export function getVitals(patientId: number): Promise<VitalV2[]> {
+  return get(`/vitals/${patientId}`);
+}
+
+export const PATIENT_ID = 1; // paciente único de la demo

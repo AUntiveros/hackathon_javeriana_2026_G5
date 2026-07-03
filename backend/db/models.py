@@ -1,6 +1,7 @@
-"""Modelos de datos (SQLModel) — núcleo mínimo del Gemelo Cognitivo.
+"""Modelos de datos (SQLModel) — asistente-guía de rutina (Nino).
 
-Schema en spec §5. Los campos ricos (metadata SES, features, payload) van como JSON.
+Foco: actividades programadas + confirmación + alertas al cuidador + vitales (smartwatch).
+NADA de evaluación cognitiva (prohibido). Los campos ricos van como JSON.
 """
 from datetime import datetime
 from typing import Optional
@@ -20,39 +21,56 @@ class Patient(SQLModel, table=True):
     sexo: str = ""
     diagnostico: str = ""
     personalidad: str = ""
-    ses_metadata: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    rutina_base: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    ses_metadata: dict = Field(default_factory=dict, sa_column=Column(JSON))  # personalización cultural
+    cuidadores: list = Field(default_factory=list, sa_column=Column(JSON))    # ids/nombres de la red
+
+
+class Actividad(SQLModel, table=True):
+    """Una rutina programada. El motor de criticidad decide cuánto insistir/escalar."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    patient_id: int = Field(foreign_key="patient.id")
+    nombre: str
+    tipo: str  # medicacion | comida | cita | autocuidado | hobby | actividad
+    criticidad_base: float = 0.5      # 0-1 (medicacion/comida ~0.9; hobby ~0.2)
+    hora: str = "08:00"                # HH:MM programada
+    ventana_min: int = 60              # tolerancia antes de considerarla retrasada
+    estado: str = "pendiente"          # pendiente | confirmada | omitida | reprogramada
+    fecha: str = ""                    # YYYY-MM-DD (día al que aplica)
+    n_recordatorios: int = 0
+    n_rechazos: int = 0
+    detalle: dict = Field(default_factory=dict, sa_column=Column(JSON))
+
+
+class Alerta(SQLModel, table=True):
+    """Aviso al cuidador cuando algo (crítico) no se cumple."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    patient_id: int = Field(foreign_key="patient.id")
+    actividad_id: Optional[int] = Field(default=None, foreign_key="actividad.id")
+    nivel: str = "medio"               # bajo | medio | alto
+    motivo: str = ""
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    atendida: bool = False
+
+
+class Vital(SQLModel, table=True):
+    """Signos del smartwatch (PPG). Cardiovascular, NO cognitivo."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    patient_id: int = Field(foreign_key="patient.id")
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    hr: int = 0
+    hrv_ms: float = 0.0
+    bp_sys_est: Optional[int] = None   # presión sistólica ESTIMADA (no invasiva, no diagnóstica)
+    bp_dia_est: Optional[int] = None
+    fuente: str = "smartwatch"
 
 
 class Event(SQLModel, table=True):
+    """Log genérico: conversación, ubicación, confirmaciones."""
     id: Optional[int] = Field(default=None, primary_key=True)
     patient_id: int = Field(foreign_key="patient.id")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    tipo: str  # medicacion | actividad | conversacion | alerta | cita | salida
+    tipo: str
     payload: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    estado: str = "pendiente"  # pendiente | hecho | omitido
-
-
-class Biomarker(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    patient_id: int = Field(foreign_key="patient.id")
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    categoria: str = ""  # prosodico | acustico | lexico | sintactico | semantico
-    features: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    riesgo_score: float = 0.0
-    modelo_version: str = "stub"
-
-
-class TwinSnapshot(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    patient_id: int = Field(foreign_key="patient.id")
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    estado_cognitivo: str = ""
-    estado_emocional: str = ""
-    riesgo: float = 0.0
-    autonomia: float = 1.0
-    adherencia: float = 1.0
-    carga_cuidador: float = 0.0
 
 
 def init_db():

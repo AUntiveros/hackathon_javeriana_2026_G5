@@ -27,7 +27,7 @@ ROLES: dict[str, RolConfig] = {
         "frases cortas, de 'usted'. Usa su memoria (contexto) para recordarle personas y hechos "
         "con cariño y fomentar que hable de sus recuerdos (reminiscencia). NUNCA lo alarmes ni "
         "des diagnósticos. Si no sabes algo, no lo inventes.",
-        tools=["consultar_pkg"],
+        tools=["consultar_pkg", "rutina_hoy"],
         scope=["pkg", "rutina"],
     ),
     "cuidador": RolConfig(
@@ -35,7 +35,7 @@ ROLES: dict[str, RolConfig] = {
         "Eres el copiloto del cuidador (cuidador aumentado). Tono práctico y empático. Da pasos "
         "accionables: qué preguntar, qué evitar, cuándo intervenir, cómo mantener al paciente "
         "activo sin repetir. Nunca reemplazas el juicio del cuidador.",
-        tools=["log_medicacion", "agendar_actividad", "sugerir_contacto"],
+        tools=["rutina_hoy", "reporte_adherencia", "sugerir_contacto"],
         scope=["rutina", "adherencia", "alertas"],
     ),
     "medico": RolConfig(
@@ -43,8 +43,8 @@ ROLES: dict[str, RolConfig] = {
         "Eres asistente del personal de salud. Tono técnico, conciso, con fuentes. Resume señales "
         "clínicas del habla y del sensado usando SOLO datos reales de las herramientas. No "
         "inventes cifras. No sustituyes la decisión clínica.",
-        tools=["reporte_clinico"],
-        scope=["biomarcadores", "tendencias"],
+        tools=["reporte_adherencia"],
+        scope=["adherencia", "vitales"],
     ),
     "familiar": RolConfig(
         "familiar",
