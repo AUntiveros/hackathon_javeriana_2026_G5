@@ -1,6 +1,12 @@
-# Diagramas de arquitectura — Ecosistema Alzheimer
+# Diagramas de arquitectura — Nino (post-pivote)
 
-Todos en Mermaid. Render en GitHub, VS Code (extensión Markdown Preview Mermaid) o mermaid.live.
+Mermaid. Render en GitHub, VS Code (Markdown Preview Mermaid) o mermaid.live.
+
+> **Alcance vigente (delimitación del hackathon):** recordatorios de una rutina cotidiana +
+> **confirmación** + **aviso al cuidador** si no se cumple. Con **motor de criticidad** (lógica
+> difusa) que respeta la autonomía. **NO** diagnostica, **NO** evalúa deterioro cognitivo, **NO**
+> usa cámara. El monitoreo de vitales (smartwatch PPG) es **cardiovascular**, no cognitivo.
+> Diagramas de la versión anterior (biomarcadores/cámara) → historial git y `backup/`.
 
 ---
 
@@ -8,33 +14,32 @@ Todos en Mermaid. Render en GitHub, VS Code (extensión Markdown Preview Mermaid
 
 ```mermaid
 graph TB
-    subgraph Personas["Red de cuidado (Human-Augmented AI)"]
-        PAC["👴 Paciente<br/>(Alzheimer)"]
+    subgraph Personas["Red de cuidado"]
+        PAC["👵 Paciente<br/>(Alzheimer leve-moderado)"]
         CUI["🧑‍⚕️ Cuidador"]
-        MED["👨‍⚕️ Médico /<br/>personal de salud"]
+        MED["👨‍⚕️ Médico"]
         FAM["👨‍👩‍👧 Familiar"]
-        COM["🌐 Comunidad /<br/>red de apoyo"]
+        COM["🌐 Comunidad"]
     end
 
-    SIS["🎼 ECOSISTEMA IA<br/>Orquestador de la red de cuidado<br/>(el 'director de orquesta')"]
+    SIS["🎼 NINO<br/>Asistente-guía de rutina orquestado por IA<br/>(RBAC · criticidad · offline-first)"]
 
-    GEM["☁️ Gemini 2.5 Flash<br/>(LLM comercial)"]
-    HW["⌚ Wearable ESP32<br/>(FC, pasos, SOS)"]
+    GEM["☁️ Gemini 2.5 Flash<br/>(solo online: conversación + reportes)"]
+    SW["⌚ Smartwatch PPG<br/>(FC/HRV, presión estimada)"]
+    LOC["📍 Ubicación<br/>(AirTag / GPS app)"]
 
-    PAC -->|conversa por voz| SIS
-    SIS -->|acompaña, recuerda, estimula| PAC
-    CUI -->|gestiona tareas, ve alertas| SIS
-    SIS -->|alertas, plan, coaching| CUI
-    MED -->|ajusta terapia, ve reportes| SIS
-    SIS -->|señales clínicas del habla| MED
-    FAM -->|recibe sugerencias| SIS
-    SIS -->|"llama a tu nieta Sofía"| FAM
+    PAC -->|habla por voz| SIS
+    SIS -->|recuerda, confirma, acompaña<br/>SIN forzar| PAC
+    CUI -->|configura rutina + criticidad| SIS
+    SIS -->|alerta SOLO si algo crítico falla| CUI
+    MED -->|carga indicaciones/medicación| SIS
+    SIS -->|adherencia + vitales (no cognitivo)| MED
+    FAM -->|recibe sugerencias de contacto| SIS
     COM -->|matching de pares| SIS
-    SIS -->|conecta intereses comunes| COM
 
-    SIS <-->|razonamiento LLM| GEM
-    HW -->|biométricos BLE| SIS
-    SIS -->|recordatorio, vibración| HW
+    SIS <-->|online| GEM
+    SW -->|vitales| SIS
+    LOC -->|posición| SIS
 ```
 
 ---
@@ -43,204 +48,182 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph Front["FRONTEND (React + Vite, voice-first)"]
-        UIP["Vista Paciente<br/>(chat de voz)"]
-        UIC["Vista Cuidador"]
-        UIM["Vista Médico"]
-        UIF["Vista Familiar"]
-        UICom["Vista Comunidad"]
-        DASH["📊 Dashboard<br/>Gemelo Cognitivo"]
+    subgraph Front["FRONTEND (React + Vite)"]
+        AP["📱 App Paciente<br/>/paciente · avatar Nino, solo voz"]
+        AE["🖥️ App Equipo<br/>/ · dashboard por rol (RBAC)"]
     end
 
-    subgraph Back["BACKEND (FastAPI)"]
-        ORQ["🎼 Orquestador<br/>(LangGraph)<br/>Role Router = RBAC"]
-        RAG["🔎 Servicio RAG<br/>(ChromaDB + PKG)"]
-        SES["⚖️ SES Personalizer"]
-        RUT["📅 Motor de rutina<br/>(orquestación día-a-día)"]
-        BIO["🎙️ Servicio Biomarcadores<br/>Whisper→features→modelo"]
-        DB[("🗄️ SQLite<br/>paciente, eventos,<br/>twin, biomarcadores")]
+    subgraph Back["BACKEND (FastAPI :8001)"]
+        ORQ["🎼 Orquestador (RBAC)<br/>5 agentes de rol"]
+        CRIT["⭐ Motor de criticidad<br/>(lógica difusa)"]
+        RUT["📅 Motor de rutina<br/>recordar→confirmar→escalar"]
+        RAG["🔎 RAG (ChromaDB)<br/>twin paciente + jornada"]
+        VIT["❤️ Vitales<br/>estimación presión PPG"]
+        DB[("🗄️ SQLite<br/>Actividad · Alerta · Vital · Patient")]
     end
 
     GEM["☁️ Gemini 2.5 Flash"]
-    HW["⌚ ESP32"]
+    EMB["🧠 Embeddings locales<br/>(sentence-transformers, offline)"]
+    SW["⌚ Smartwatch ESP32 (PPG)"]
 
-    UIP & UIC & UIM & UIF & UICom -->|REST / WS| ORQ
-    DASH -->|REST| DB
-    DASH -->|REST| BIO
+    AP -->|"POST /chat (voz)"| ORQ
+    AE -->|"rutina, alertas, adherencia, vitales"| ORQ
+    AE --> RUT
     ORQ --> RAG
-    ORQ --> SES
     ORQ --> RUT
-    ORQ -->|function calling| GEM
-    ORQ --> DB
+    RUT --> CRIT
+    CRIT -->|escala lo crítico| DB
     RUT --> DB
-    BIO --> DB
-    BIO -.->|riesgo alimenta| DASH
-    HW <-->|Web Bluetooth| UIC
-    HW -->|biométricos| DB
+    RAG --> EMB
+    ORQ -.->|solo online| GEM
+    SW -->|"POST /vitals"| VIT --> DB
+    RAG --> DB
 ```
 
 ---
 
-## 3. C4 Nivel 3 — Componentes del Orquestador (RBAC)
+## 3. C4 Nivel 3 — Orquestador (RBAC) + criticidad
 
 ```mermaid
 graph TB
-    IN["Entrada del usuario<br/>+ rol autenticado"]
-    ROUTER{"Role Router<br/>(RBAC)"}
+    IN["Mensaje + rol autenticado"]
+    ROUTER{"Role Router (RBAC)"}
 
-    subgraph Agentes["Agentes especializados por rol"]
-        AP["Agente Paciente<br/>tono cálido"]
-        AC["Agente Cuidador<br/>práctico"]
-        AM["Agente Médico<br/>técnico + fuentes"]
-        AF["Agente Familiar<br/>cercano"]
-        ACom["Agente Comunidad<br/>social"]
+    subgraph Agentes["Agentes por rol (scope + tools distintos)"]
+        A1["Paciente<br/>consultar_pkg, rutina_hoy"]
+        A2["Cuidador<br/>rutina_hoy, reporte_adherencia"]
+        A3["Médico<br/>reporte_adherencia (NO cognitivo)"]
+        A4["Familiar<br/>sugerir_contacto, consultar_pkg"]
+        A5["Comunidad<br/>sugerir_contacto"]
     end
 
-    subgraph Herramientas["Tools (function calling)"]
-        T1["consultar_PKG"]
-        T2["log_medicacion"]
-        T3["agendar_actividad"]
-        T4["extraer_biomarcador"]
-        T5["reporte_clinico"]
-        T6["sugerir_contacto"]
-    end
-
-    GUARD["🛡️ Guardrails<br/>formato + disclaimers<br/>anti-alucinación"]
-    MEM["🧠 Memory Manager<br/>(scope por rol)"]
+    GUARD["🛡️ Guardrails<br/>sin diagnóstico, sin evaluar deterioro"]
+    MEM["🧠 Twin (RAG) + rutina"]
 
     IN --> ROUTER
-    ROUTER -->|rol=paciente| AP
-    ROUTER -->|rol=cuidador| AC
-    ROUTER -->|rol=medico| AM
-    ROUTER -->|rol=familiar| AF
-    ROUTER -->|rol=comunidad| ACom
-
-    AP --> T1 & T4
-    AC --> T2 & T3
-    AM --> T5
-    AF --> T6
-    ACom --> T6
-
-    AP & AC & AM & AF & ACom --> MEM
-    AP & AC & AM & AF & ACom --> GUARD
-    GUARD --> OUT["Respuesta trazable"]
+    ROUTER --> A1 & A2 & A3 & A4 & A5
+    A1 & A2 & A3 & A4 & A5 --> MEM
+    A1 & A2 & A3 & A4 & A5 --> GUARD --> OUT["Respuesta trazable, cálida"]
 ```
 
 ---
 
-## 4. Loop cerrado — conversación como biomarcador (núcleo diferenciador)
+## 4. ⭐ Motor de criticidad (el diferenciador)
 
 ```mermaid
-flowchart LR
-    A["🗣️ Conversación<br/>terapéutica diaria"] --> B["🎙️ Extracción de<br/>biomarcadores del habla"]
-    B --> C["🧠 Actualización del<br/>Gemelo Cognitivo"]
-    C --> D["📈 Predicción de<br/>deterioro / riesgo"]
-    D --> E["⚖️ Personalización<br/>(SES + reserva cognitiva)"]
-    E --> F["🎯 Nueva conversación<br/>que ejercita funciones"]
-    F --> A
-    B -.->|features| G[("Biomarker store")]
-    C -.->|snapshot| H[("Twin store")]
-    D -.->|alerta si supera umbral| I["🚨 Escalado al cuidador"]
+flowchart TB
+    subgraph IN["Entradas difusas"]
+        C["criticidad de la actividad<br/>medicación/comida ~0.9 · hobby ~0.2"]
+        R["retraso vs hora programada"]
+        RC["receptividad del paciente<br/>(irritable ↔ receptivo)"]
+        NR["nº de rechazos"]
+    end
+
+    FZ["Fuzzificación<br/>(membresías triangulares)"]
+    RULES["Reglas Mamdani<br/>ej: crítico + muy tarde → escalar<br/>no-crítico + irritable → soltar"]
+    DFZ["Defuzzificación<br/>(centroides) → insistencia [0-1]"]
+
+    C & R & RC & NR --> FZ --> RULES --> DFZ --> ACC{"acción"}
+    ACC -->|"0 – 0.25"| S["soltar<br/>(respeta autonomía)"]
+    ACC -->|"0.25 – 0.5"| SU["sugerir suave"]
+    ACC -->|"0.5 – 0.72"| F["recordar firme (cálido)"]
+    ACC -->|"0.72 – 1"| E["🚨 escalar al cuidador"]
+
+    S -.->|NUNCA fuerza| PAC["Paciente"]
+    E -.->|enforcement = avisar,<br/>no coaccionar| CUI["Cuidador"]
 ```
 
 ---
 
-## 5. ⭐ Orquestación del día-a-día del paciente (requerido)
-
-Secuencia de un día típico gestionado por el Motor de Rutina + agentes.
+## 5. Flujo de rutina — recordar → confirmar → escalar (secuencia)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant R as 📅 Motor de Rutina
-    participant AP as 🤖 Agente Paciente
-    participant P as 👴 Paciente
-    participant HW as ⌚ ESP32
-    participant T as 🧠 Gemelo Cognitivo
-    participant AC as 🧑‍⚕️ Agente Cuidador
-    participant C as Cuidador
+    participant R as 📅 Motor de rutina
+    participant CR as ⭐ Criticidad
+    participant N as 🤖 Nino (voz)
+    participant P as 👵 Paciente
+    participant AC as 🧑‍⚕️ Cuidador
 
-    Note over R: 08:00 — Inicio del día
-    R->>AP: Trigger rutina matutina
-    AP->>P: "Buenos días Don José.<br/>¿Cómo durmió?" (check-in de voz)
-    P-->>AP: (responde por voz)
-    AP->>T: extraer_biomarcador(audio)
-    AP->>P: Orientación temporal:<br/>"Hoy es jueves 2 de julio"
+    Note over R: Hora programada de una actividad
+    R->>CR: evaluar(criticidad, retraso, receptividad)
+    CR-->>R: acción + mensaje
 
-    Note over R: 08:30 — Medicación
-    R->>AP: Recordatorio medicación
-    AP->>P: "Es hora de su pastilla azul"
-    HW-->>P: vibra (recordatorio háptico)
-    P-->>AP: "Ya la tomé"
-    AP->>T: log_medicacion(tomada=true)
-
-    Note over R: 10:00 — Actividad NO repetitiva
-    R->>R: elegir_actividad(historial,<br/>intereses, no-repetir)
-    R->>AP: Proponer actividad
-    AP->>P: "¿Le gustaría ver fotos<br/>de su boda?" (reminiscencia)
-    AP->>T: registrar engagement
-
-    Note over R: 13:00 — Monitoreo pasivo
-    HW->>T: FC, pasos, actividad
-    T->>T: evaluar riesgo/autonomía
-
-    Note over R: 15:00 — Detección de anomalía
-    HW->>T: sedentarismo prolongado
-    T->>AC: riesgo elevado
-    AC->>C: "Don José lleva 3h sin<br/>moverse. ¿Todo bien?"
-
-    Note over R: 18:00 — Conexión humana
-    T->>AC: 3 días sin hablar con nieta
-    AC->>C: "Buen día para que Sofía<br/>lo llame. Último tema:<br/>cumpleaños del bisnieto"
-
-    Note over R: 20:00 — Cierre + adherencia
-    R->>T: consolidar_dia()
-    T->>AC: resumen: adherencia 100%,<br/>ánimo estable, léxico normal
+    alt actividad NO crítica y paciente no quiere
+        R->>N: soltar
+        N->>P: "Está bien, lo dejamos para después" (no insiste)
+    else actividad crítica (medicación/comida)
+        R->>N: recordar firme
+        N->>P: "¿Tomamos su pastilla juntos?"
+        alt paciente confirma
+            P->>N: "ya la tomé"
+            N->>R: confirmar() → estado=confirmada
+        else no se cumple / vencida
+            R->>CR: reevaluar (retraso alto)
+            CR-->>R: escalar_cuidador
+            R->>AC: 🚨 Alerta "No tomó su medicación"
+        end
+    end
+    Note over R,AC: Confirma y avisa SOLO lo crítico (no controla todo)
 ```
 
 ---
 
-## 6. Máquina de estados del wearable ESP32
+## 6. Vitales — smartwatch PPG (cardiovascular, no cognitivo)
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Idle
-    Idle --> Midiendo: cada 30s
-    Midiendo --> Idle: publica FC/pasos (BLE)
-    Idle --> Recordatorio: recibe cmd BLE
-    Recordatorio --> Vibrando: activa motor
-    Vibrando --> Idle: confirmado / timeout
-    Idle --> SOS: botón presionado 3s
-    SOS --> AlertaEnviada: notifica cuidador
-    AlertaEnviada --> Idle: reconocido
+flowchart LR
+    SW["⌚ ESP32 + MAX30102"] -->|"FC + RR intervals"| HRV["calcula HRV (RMSSD)"]
+    HRV -->|"WiFi POST /vitals"| BE["Backend"]
+    BE --> EST["Estimación presión<br/>(PPG → sys/dia, NO diagnóstico)"]
+    EST --> DB[("Vital")]
+    DB --> DASH["Dashboard médico/cuidador"]
+    SW -.->|botón| SOS["SOS + vibración"]
+    Note["Justificación: ~81.6% de pacientes<br/>con demencia son hipertensos"]
 ```
 
 ---
 
-## 7. Despliegue (hackathon)
+## 7. Modos offline ↔ online (edge-first)
+
+```mermaid
+flowchart TB
+    subgraph EDGE["EDGE / OFFLINE (siempre disponible)"]
+        RUT2["Rutina + recordatorios"]
+        CRIT2["Motor de criticidad"]
+        CONF["Confirmación + alertas locales"]
+        RAG2["Twin (ChromaDB + embeddings locales)"]
+        TTS["Voz (Web Speech API navegador)"]
+    end
+    subgraph CLOUD["CLOUD / ONLINE (cuando hay red)"]
+        LLM["Conversación rica (Gemini)"]
+        REP["Reportes + metadata al equipo"]
+        SYNC["Sync de eventos"]
+    end
+    EDGE -.->|si hay internet, sincroniza| CLOUD
+    CLOUD -.->|si se cae la red, degrada a| EDGE
+    Note2["Sin red: reminders, criticidad, confirmación,<br/>alertas y memoria funcionan igual.<br/>La nube solo AGREGA conversación y reportes."]
+```
+
+---
+
+## 8. Despliegue (demo)
 
 ```mermaid
 graph TB
-    subgraph Laptop["💻 Laptop dev (demo local)"]
-        FE["Frontend Vite<br/>localhost:5173"]
-        BE["FastAPI<br/>localhost:8000"]
-        CH[("ChromaDB<br/>local")]
+    subgraph Laptop["💻 Laptop (demo)"]
+        FE["Vite :5173<br/>/paciente + /"]
+        BE["FastAPI :8001"]
+        CH[("ChromaDB local")]
         SQ[("SQLite")]
     end
+    NAV["🌐 Chrome/Edge<br/>Web Speech (voz)"]
+    SW["⌚ ESP32 smartwatch<br/>WiFi → /vitals"]
+    GEM["☁️ Gemini API"]
 
-    subgraph Colab["☁️ Google Colab / HF Space"]
-        TRAIN["Entrenamiento<br/>biomarcadores<br/>(GPU gratis)"]
-        MODEL["modelo.pkl +<br/>métricas fairness"]
-    end
-
-    NAV["🌐 Navegador<br/>(Web Speech + Web Bluetooth)"]
-    ESP["⌚ ESP32"]
-    GEMINI["☁️ Gemini API"]
-
-    NAV --> FE --> BE
+    NAV --> FE -->|VITE_API_URL| BE
     BE --> CH & SQ
-    BE --> GEMINI
-    NAV <-->|BLE| ESP
-    TRAIN --> MODEL
-    MODEL -.->|se copia a| BE
+    BE -.->|online| GEM
+    SW -->|POST /vitals| BE
 ```
