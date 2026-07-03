@@ -21,8 +21,9 @@ COLLECTION = "pkg_don_jose"
 
 
 def _embed_query(text: str):
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if api_key:
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    usar_gemini = os.environ.get("RAG_USE_GEMINI") == "1" and api_key and "PEGA" not in api_key
+    if usar_gemini:
         import google.generativeai as genai
 
         genai.configure(api_key=api_key)

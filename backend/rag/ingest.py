@@ -21,9 +21,14 @@ COLLECTION = "pkg_don_jose"
 
 
 def get_embedder():
-    """Devuelve una función embed(list[str]) -> list[list[float]]."""
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if api_key:
+    """Devuelve una función embed(list[str]) -> list[list[float]].
+
+    Por defecto usa modelo LOCAL (sentence-transformers): offline y consistente con el retriever.
+    Solo usa Gemini si RAG_USE_GEMINI=1 y hay una API key real.
+    """
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    usar_gemini = os.environ.get("RAG_USE_GEMINI") == "1" and api_key and "PEGA" not in api_key
+    if usar_gemini:
         import google.generativeai as genai
 
         genai.configure(api_key=api_key)

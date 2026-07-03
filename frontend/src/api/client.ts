@@ -42,28 +42,49 @@ export function chat(req: ChatRequest): Promise<ChatResponse> {
   return API_URL ? post('/chat', req) : mock.chat(req);
 }
 
-export function getRoutineToday(patientId: number): Promise<RoutineEvent[]> {
-  return API_URL ? get(`/routine/${patientId}/today`) : mock.getRoutineToday(patientId);
+/** Mapea una actividad del backend v2 al shape RoutineEvent que consumen las vistas. */
+function actividadToEvent(a: ActividadV2): RoutineEvent {
+  const tipo: RoutineEvent['tipo'] =
+    a.tipo === 'medicacion' ? 'medicacion' : a.tipo === 'cita' ? 'cita' : 'actividad';
+  const estado: RoutineEvent['estado'] =
+    a.estado === 'confirmada' ? 'hecho' : a.estado === 'omitida' ? 'omitido' : 'pendiente';
+  return {
+    id: a.id,
+    hora: a.hora,
+    tipo,
+    titulo: a.nombre,
+    detalle: `${a.tipo} · criticidad ${(a.criticidad * 100).toFixed(0)}%`,
+    estado,
+  };
 }
 
-export function logMedicacion(eventId: number): Promise<void> {
-  return API_URL ? post(`/events/${eventId}/done`, {}) : mock.logMedicacion(eventId);
+export async function getRoutineToday(patientId: number): Promise<RoutineEvent[]> {
+  if (!API_URL) return mock.getRoutineToday(patientId);
+  const data = await get<{ actividades: ActividadV2[] }>(`/routine/${patientId}/today`);
+  return data.actividades.map(actividadToEvent);
 }
 
+export function logMedicacion(actividadId: number): Promise<void> {
+  // v2: confirmar actividad (antes era /events/:id/done, inexistente)
+  return API_URL ? post(`/actividades/${actividadId}/confirmar`, {}) : mock.logMedicacion(actividadId);
+}
+
+// --- Vistas cognitivas (twin/señales del habla): PROHIBIDAS por el pivote y REMOVIDAS del backend.
+// Se mantienen en MOCK para no romper la demo visual; migrar a adherencia/alertas/vitales (v2).
 export function getTwinTrend(patientId: number): Promise<TrendPoint[]> {
-  return API_URL ? get(`/twin/${patientId}/trend`) : mock.getTwinTrend(patientId);
+  return mock.getTwinTrend(patientId);
 }
 
 export function getTwinAlerts(patientId: number): Promise<Alerta[]> {
-  return API_URL ? get(`/twin/${patientId}/alerts`) : mock.getTwinAlerts(patientId);
+  return mock.getTwinAlerts(patientId);
 }
 
 export function getTwinSnapshot(patientId: number): Promise<Snapshot> {
-  return API_URL ? get(`/twin/${patientId}/snapshot`) : mock.getTwinSnapshot(patientId);
+  return mock.getTwinSnapshot(patientId);
 }
 
 export function getSenalesClinicas(patientId: number): Promise<SenalClinica[]> {
-  return API_URL ? get(`/twin/${patientId}/signals`) : mock.getSenalesClinicas(patientId);
+  return mock.getSenalesClinicas(patientId);
 }
 
 // ============================================================

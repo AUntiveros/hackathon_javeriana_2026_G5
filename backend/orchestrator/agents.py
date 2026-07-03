@@ -65,9 +65,9 @@ ROLES: dict[str, RolConfig] = {
 
 
 def _gemini(system_prompt: str, user_prompt: str) -> str | None:
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        return None
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if not api_key or "PEGA" in api_key:
+        return None  # sin key real -> modo offline plantillado
     import google.generativeai as genai
 
     genai.configure(api_key=api_key)
