@@ -1,7 +1,8 @@
-# Lista de compra — prototipado rápido (2 dispositivos)
+# Lista de compra — prototipado rápido (UN solo dispositivo: Uno Q)
 
-> Dos dispositivos separados. Los componentes NO se comparten.
-> **Uno Q = mini-PC Linux → periféricos USB.** **ESP32 = electrónica → sensores I2C + batería.**
+> DECISIÓN 2026-07-02: **todo en el Uno Q** (dual-brain). El ESP32 se descarta como aparato
+> separado (queda como roadmap "wrist-band"). El Uno Q hace visión/voz (lado Linux) Y biométricos
+> (lado MCU, headers Arduino). Menos plata, sin BLE, menos riesgo en vivo.
 
 ---
 
@@ -21,20 +22,20 @@
 
 ---
 
-## B) ESP32 wearable — biométricos (FC, pasos, SOS, vibración)
+## B) Biométricos — se conectan a los HEADERS ARDUINO del Uno Q (lado MCU)
+
+> Ya NO hay ESP32. Estos módulos se cablean a los pines Arduino del propio Uno Q; el sketch del
+> MCU (`hardware/unoq_mcu/`) los lee y manda los datos al Python por el puente serial interno.
 
 | Componente | Imprescindible | Nota |
 |---|---|---|
-| **ESP32 DevKit v1** (WiFi+BLE) | ✅ | Cerebro del wearable |
-| **MAX30102** (GY morado, con regulador) | ✅ | Frecuencia cardíaca / SpO2 (I2C 0x57) |
-| **MPU6050** (IMU 6 ejes) | ✅ | Pasos + caída (I2C 0x68, comparte bus) |
-| **Motor vibrador** coin/ERM | ✅ | Recordatorio háptico |
-| **Transistor 2N2222** + **R 1kΩ** + **diodo 1N4148** | ✅ | Driver del motor (no lo conectes directo al GPIO) |
-| **Push button** táctil | ✅ | Botón SOS (mantener 3s) |
-| **OLED SSD1306 0.96" I2C** | ⬜ opcional | Mostrar hora / mini-mensaje. Lindo pero no crítico |
-| **LiPo 3.7V 500–1000mAh** | ⬜ para portátil | Si no, aliméntalo por power bank/USB y ahorras lo de abajo |
-| **TP4056** (módulo de carga LiPo) | ⬜ con LiPo | Carga segura de la batería |
-| **MT3608** (step-up a 5V) | ⬜ con LiPo | Solo si algún módulo necesita 5V; el ESP32 va a 3.7V directo |
+| **MAX30102** (GY morado, con regulador) | ✅ | Frecuencia cardíaca / SpO2 → pines I2C del Uno Q (0x57) |
+| **MPU6050** (IMU 6 ejes) | ✅ | Pasos + caída → mismo bus I2C (0x68) |
+| **Motor vibrador** coin/ERM | ✅ | Recordatorio háptico → pin D3 |
+| **Transistor 2N2222** + **R 1kΩ** + **diodo 1N4148** | ✅ | Driver del motor (no directo al pin) |
+| **Push button** táctil | ✅ | Botón SOS → pin D2 (mantener 3s) |
+| **OLED SSD1306 0.96" I2C** | ⬜ opcional | Mostrar hora/mensaje en el bracito de sensores |
+| ~~ESP32 / LiPo / TP4056 / MT3608~~ | ❌ fuera | El Uno Q se alimenta por power bank (sección A); no hace falta |
 
 ---
 
@@ -53,12 +54,13 @@
 
 ## Prioridad si el presupuesto/tiempo aprieta
 
-1. **Uno Q:** webcam USB (prestada) + parlante USB + power bank + hub USB. → habilita el wow de visión/voz.
-2. **ESP32:** ESP32 + MAX30102 + MPU6050 + motor + transistor + botón + protoboard + jumpers + headers/cautín. → habilita el wearable.
-3. Opcionales (OLED, LiPo+TP4056+MT3608): solo si sobra tiempo para hacerlo portátil y bonito.
+1. **Uno Q base:** webcam USB (prestada) + parlante USB + power bank + hub USB. → wow de visión/voz.
+2. **Biométricos:** MAX30102 + MPU6050 + motor + transistor + diodo + botón + protoboard + jumpers + tira de headers + cautín/estaño. → señales de salud + SOS + vibración.
+3. Opcional (OLED): solo si sobra tiempo.
 
 ## Decisiones ya resueltas
+- **Un solo aparato: el Uno Q** (dual-brain). ESP32 descartado (roadmap wrist-band).
 - **Cámara:** USB (Logi), NO ESP32-CAM (no encaja limpio en el Uno Q).
 - **Mic/parlante:** USB (el Uno Q es Linux).
-- **Energía Uno Q:** power bank, NO LiPo+step-up (consume demasiado).
-- **Energía ESP32:** power bank/USB basta; LiPo+TP4056+MT3608 solo para versión portátil.
+- **Energía:** power bank USB, NO LiPo+step-up (el Uno Q consume demasiado).
+- **Biométricos:** a los headers Arduino del Uno Q; el sketch MCU los manda al Python por serial.

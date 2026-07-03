@@ -1,0 +1,10 @@
+{
+  "dataset": "SINTÉTICO (fallback offline / demo de concepto)",
+  "modality": "features",
+  "is_synthetic_features": true,
+  "ses_synthetic": true,
+  "ses_confound_injected": true,
+  "n_samples": 360,
+  "n_positive": 180,
+  "n_negative": 180
+}

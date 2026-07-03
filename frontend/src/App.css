@@ -59,3 +59,10 @@
   text-align: center;
   padding: 2rem 0;
 }
+
+.app__link-paciente {
+  font-size: 0.95rem;
+  color: #8A7468;
+  text-decoration: underline;
+  padding: 0.5rem;
+}

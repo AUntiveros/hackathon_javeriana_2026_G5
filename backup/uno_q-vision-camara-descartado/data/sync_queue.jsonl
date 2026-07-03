@@ -1,0 +1,2 @@
+{"patient_id": 1, "tipo": "objeto_visto", "payload": {"clase": "cell phone", "etiqueta": "tu celular"}, "ts": "2026-07-02T17:03:43.106276"}
+{"patient_id": 1, "tipo": "ubicacion_objeto", "payload": {"clase": "cell phone", "zona": "un lugar desconocido"}, "ts": "2026-07-02T17:03:43.106781"}

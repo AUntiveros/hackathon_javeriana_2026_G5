@@ -1,0 +1,14 @@
+# Visión (Uno Q Linux / laptop dev)
+opencv-contrib-python      # incluye LBPH para reconocimiento facial
+numpy
+tflite-runtime ; platform_machine != "x86_64" or platform_system == "Linux"
+# En Windows/dev sin tflite-runtime: usar tensorflow (pesado) o quedarse en modo stub
+pillow
+requests                   # sync con backend
+pyserial                   # puente MCU (biométricos) ↔ Linux del Uno Q
+
+# Voz (fase siguiente)
+sounddevice
+vosk                       # STT offline español (modelo pequeño aparte)
+gtts                       # TTS online (offline: piper/espeak-ng por SO)
+google-generativeai        # LLM online (reusa la key de Gemini)

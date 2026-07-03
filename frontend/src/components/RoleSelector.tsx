@@ -12,13 +12,15 @@ const ROLES: { id: Rol; label: string; icono: string }[] = [
 interface Props {
   rol: Rol;
   onCambio: (rol: Rol) => void;
+  /** roles a ocultar (p.ej. paciente en la app del equipo) */
+  excluir?: Rol[];
 }
 
-/** Selector de los 5 roles RBAC — cambiar rol cambia vista, tono y datos. */
-export default function RoleSelector({ rol, onCambio }: Props) {
+/** Selector de roles RBAC — cambiar rol cambia vista, tono y datos. */
+export default function RoleSelector({ rol, onCambio, excluir = [] }: Props) {
   return (
     <nav className="roles" aria-label="Seleccionar rol">
-      {ROLES.map((r) => (
+      {ROLES.filter((r) => !excluir.includes(r.id)).map((r) => (
         <button
           key={r.id}
           className={`roles__chip ${rol === r.id ? 'roles__chip--activo' : ''}`}

@@ -69,6 +69,7 @@
 
 .nino__waves,
 .nino__thoughts,
+.nino__zzz,
 .nino__brows,
 .nino__eyes--happy,
 .nino__mouth--open,
@@ -201,6 +202,41 @@
 /* respiración más lenta y contenida */
 .nino--concerned .nino__all {
   animation-duration: 4.2s;
+}
+
+/* ============================================================
+   DORMIDO — ojos cerrados (arcos), zzz flotando, respiración lenta
+   ============================================================ */
+
+.nino--sleeping .nino__eyes--open { opacity: 0; }
+.nino--sleeping .nino__eyes--happy {
+  opacity: 1;
+  transform: scaleY(-1) translateY(-8px); /* arcos hacia abajo: párpados */
+}
+.nino--sleeping .nino__mouth--smile {
+  transform: scale(0.6);
+}
+.nino--sleeping .nino__cheek { opacity: 0.6; }
+.nino--sleeping .nino__antenna { transform: rotate(-18deg); }
+.nino--sleeping .nino__antenna-bulb {
+  fill: #D8CBBD;
+  animation: none;
+}
+.nino--sleeping .nino__all {
+  animation-duration: 5.2s;
+}
+.nino--sleeping .nino__head {
+  transform: rotate(3deg);
+}
+
+.nino--sleeping .nino__zzz { opacity: 1; }
+.nino--sleeping .nino__z--1 { animation: nino-z 2.6s ease-in-out infinite; }
+.nino--sleeping .nino__z--2 { animation: nino-z 2.6s ease-in-out 0.4s infinite; }
+.nino--sleeping .nino__z--3 { animation: nino-z 2.6s ease-in-out 0.8s infinite; }
+
+@keyframes nino-z {
+  0%, 100% { transform: translateY(0); opacity: 0.35; }
+  50%      { transform: translateY(-7px); opacity: 1; }
 }
 
 /* ============================================================

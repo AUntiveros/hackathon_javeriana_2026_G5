@@ -1,5 +1,11 @@
 # Firmware ESP32 — flasheo y prueba
 
+> ⚠️ ROADMAP / ALTERNATIVA. Decisión 2026-07-02: el prototipo se consolidó en el **Arduino Uno Q**
+> (biométricos en su lado MCU, ver `hardware/unoq_mcu/` y `uno_q/hardware/bridge.py`). Este firmware
+> ESP32+BLE queda como la versión "wrist-band separado" para el roadmap. Úsalo solo si decides hacer
+> un wearable de muñeca independiente.
+
+
 ## 1. Preparar Arduino IDE
 1. Instalar **Arduino IDE 2.x**.
 2. File → Preferences → Additional Board Manager URLs:

@@ -1,6 +1,6 @@
 import './nino.css';
 
-export type NinoMood = 'idle' | 'listening' | 'thinking' | 'happy' | 'concerned';
+export type NinoMood = 'idle' | 'listening' | 'thinking' | 'happy' | 'concerned' | 'sleeping';
 
 export interface NinoProps {
   /** Estado emocional del robot */
@@ -43,6 +43,13 @@ export default function Nino({
             <path className="nino__wave nino__wave--2" d="M14 95 q -16 25 0 50" />
             <path className="nino__wave nino__wave--1" d="M232 105 q 10 15 0 30" />
             <path className="nino__wave nino__wave--2" d="M246 95 q 16 25 0 50" />
+          </g>
+
+          {/* zzz de dormido */}
+          <g className="nino__zzz" fill="#B9A99B" fontFamily="inherit" fontWeight="800">
+            <text className="nino__z nino__z--1" x="196" y="46" fontSize="20">z</text>
+            <text className="nino__z nino__z--2" x="214" y="32" fontSize="26">z</text>
+            <text className="nino__z nino__z--3" x="236" y="18" fontSize="32">z</text>
           </g>
 
           {/* burbuja de pensamiento */}
@@ -169,4 +176,5 @@ const MOOD_LABEL: Record<NinoMood, string> = {
   thinking: 'pensando',
   happy: 'feliz',
   concerned: 'un poco preocupado',
+  sleeping: 'dormido',
 };
