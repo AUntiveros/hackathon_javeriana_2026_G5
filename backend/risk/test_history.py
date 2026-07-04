@@ -29,26 +29,30 @@ def test_sin_historial_devuelve_prior_neutro():
 def test_incumplimiento_historico_sube_la_tasa():
     init_db()
     _limpiar()
-    with get_session() as s:
-        for i in range(1, 6):
-            s.add(Actividad(patient_id=PID, nombre="test", tipo="medicacion",
-                             criticidad_base=0.9, hora="08:00", fecha=_fecha(i),
-                             estado="pendiente"))
-        s.commit()
-    tasa = history.tasa_historica(PID, "medicacion")
-    assert tasa == pytest.approx((5 + 1) / (5 + 2))
-    _limpiar()
+    try:
+        with get_session() as s:
+            for i in range(1, 6):
+                s.add(Actividad(patient_id=PID, nombre="test", tipo="medicacion",
+                                 criticidad_base=0.9, hora="08:00", fecha=_fecha(i),
+                                 estado="pendiente"))
+            s.commit()
+        tasa = history.tasa_historica(PID, "medicacion")
+        assert tasa == pytest.approx((5 + 1) / (5 + 2))
+    finally:
+        _limpiar()
 
 
 def test_cumplimiento_historico_baja_la_tasa():
     init_db()
     _limpiar()
-    with get_session() as s:
-        for i in range(1, 6):
-            s.add(Actividad(patient_id=PID, nombre="test", tipo="medicacion",
-                             criticidad_base=0.9, hora="08:00", fecha=_fecha(i),
-                             estado="confirmada"))
-        s.commit()
-    tasa = history.tasa_historica(PID, "medicacion")
-    assert tasa == pytest.approx((0 + 1) / (5 + 2))
-    _limpiar()
+    try:
+        with get_session() as s:
+            for i in range(1, 6):
+                s.add(Actividad(patient_id=PID, nombre="test", tipo="medicacion",
+                                 criticidad_base=0.9, hora="08:00", fecha=_fecha(i),
+                                 estado="confirmada"))
+            s.commit()
+        tasa = history.tasa_historica(PID, "medicacion")
+        assert tasa == pytest.approx((0 + 1) / (5 + 2))
+    finally:
+        _limpiar()
