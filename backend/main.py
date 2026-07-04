@@ -139,6 +139,7 @@ class VitalIn(BaseModel):
     patient_id: int = 1
     hr: int
     hrv_ms: float = 0.0
+    pasos: int = 0
 
 
 @app.post("/vitals")
@@ -147,7 +148,7 @@ def ingest_vital(body: VitalIn):
         p = s.exec(select(Patient).where(Patient.id == body.patient_id)).first()
         edad = p.edad if p else 75
         bp = estimate.estimar_presion(body.hr, body.hrv_ms, edad)
-        v = Vital(patient_id=body.patient_id, hr=body.hr, hrv_ms=body.hrv_ms,
+        v = Vital(patient_id=body.patient_id, hr=body.hr, hrv_ms=body.hrv_ms, pasos=body.pasos,
                   bp_sys_est=bp["bp_sys_est"], bp_dia_est=bp["bp_dia_est"])
         s.add(v)
         s.commit()
@@ -159,7 +160,7 @@ def listar_vitals(pid: int, limit: int = 50):
     with get_session() as s:
         vs = s.exec(select(Vital).where(Vital.patient_id == pid)
                     .order_by(Vital.timestamp.desc())).all()
-    return [{"ts": v.timestamp.isoformat(), "hr": v.hr, "hrv_ms": v.hrv_ms,
+    return [{"ts": v.timestamp.isoformat(), "hr": v.hr, "hrv_ms": v.hrv_ms, "pasos": v.pasos,
              "bp_sys_est": v.bp_sys_est, "bp_dia_est": v.bp_dia_est} for v in vs[:limit]]
 
 
@@ -183,6 +184,17 @@ def reporte_jornada(pid: int):
         "alertas_pendientes": [{"id": a.id, "nivel": a.nivel, "motivo": a.motivo} for a in alertas],
         "ultimo_vital": ({"hr": v.hr, "bp_sys_est": v.bp_sys_est, "bp_dia_est": v.bp_dia_est} if v else None),
     }
+
+
+# ---------- Riesgo global (fuzzy-bayesiano, capa cloud) ----------
+# Import perezoso a propósito: esta capa depende de pgmpy y construye la red
+# bayesiana al importarse (backend/risk/bayes_engine.py). Si eso falla, NO debe
+# tumbar el arranque de toda la API (rutina/confirmación/vitales/chat) — solo
+# esta ruta específica falla con un 500 normal de FastAPI.
+@app.post("/riesgo/{pid}/evaluar")
+def riesgo_evaluar(pid: int):
+    from backend.risk import engine as risk_engine
+    return risk_engine.evaluar_riesgo_global(pid)
 
 
 # ---------- Personalización cultural (no cognitiva) ----------

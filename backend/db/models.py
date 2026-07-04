@@ -59,6 +59,7 @@ class Vital(SQLModel, table=True):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     hr: int = 0
     hrv_ms: float = 0.0
+    pasos: int = 0                     # pasos del dia (podometro del smartwatch)
     bp_sys_est: Optional[int] = None   # presión sistólica ESTIMADA (no invasiva, no diagnóstica)
     bp_dia_est: Optional[int] = None
     fuente: str = "smartwatch"

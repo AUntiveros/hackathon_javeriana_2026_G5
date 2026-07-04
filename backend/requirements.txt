@@ -26,3 +26,9 @@ scikit-learn
 xgboost
 pandas
 numpy
+
+# Motor de riesgo global (fuzzy-bayesiano)
+pgmpy
+
+# Testing
+pytest
