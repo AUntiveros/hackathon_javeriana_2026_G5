@@ -44,7 +44,7 @@ Las evidencias difusas del paso 2 se inyectan como **soft evidence** (`virtual_e
 | 60–85% | Riesgo agudo moderado | Alerta sonora / notificación urgente |
 | > 85% | Crisis inminente | Alarma roja a cuidador + contactos de emergencia |
 
-Se crea `Alerta(tipo="riesgo_global", nivel=...)` — tipo distinto de las alertas por actividad individual que ya genera `routine/engine.py`, para que el cuidador distinga "esta actividad puntual no se hizo" de "el conjunto de señales sugiere riesgo real".
+Se crea una `Alerta` (mismo modelo, sin campo `tipo` — el modelo actual no lo tiene) con `actividad_id=None` y `motivo="Riesgo global {tier}: ..."` — el prefijo en `motivo` distingue esta alerta de las que ya genera `routine/engine.py` por actividad puntual (`motivo="No se completó: {nombre}"`), para que el cuidador distinga "esta actividad no se hizo" de "el conjunto de señales sugiere riesgo real".
 
 ## Flujo de datos
 
