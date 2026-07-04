@@ -54,13 +54,6 @@ ROLES: dict[str, RolConfig] = {
         tools=["sugerir_contacto", "consultar_pkg"],
         scope=["estado_general", "temas"],
     ),
-    "comunidad": RolConfig(
-        "comunidad",
-        "Conectas al paciente con pares de intereses comunes para combatir el aislamiento. Tono "
-        "social e inclusivo. No expongas datos sensibles.",
-        tools=["sugerir_contacto"],
-        scope=["intereses"],
-    ),
 }
 
 

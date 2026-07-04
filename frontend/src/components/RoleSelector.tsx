@@ -6,7 +6,6 @@ const ROLES: { id: Rol; label: string; icono: string }[] = [
   { id: 'cuidador', label: 'Cuidador', icono: '🤝' },
   { id: 'medico', label: 'Médico', icono: '🩺' },
   { id: 'familiar', label: 'Familiar', icono: '👨‍👩‍👧' },
-  { id: 'comunidad', label: 'Comunidad', icono: '🏘️' },
 ];
 
 interface Props {

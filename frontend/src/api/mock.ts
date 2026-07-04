@@ -72,14 +72,6 @@ const RESPUESTAS_POR_ROL: Record<Rol, ChatResponse[]> = {
       tools_usadas: ['sugerir_contacto'],
     },
   ],
-  comunidad: [
-    {
-      respuesta:
-        'Hay 2 vecinos del club de adulto mayor con intereses parecidos a los de Don Manuel: don Ernesto (también ex-agricultor) y doña Carmen (fan de la música criolla). ¿Coordino un encuentro para el sábado?',
-      emocion: 'feliz',
-      tools_usadas: ['matching_pares'],
-    },
-  ],
 };
 
 const turnos: Record<Rol, number> = {
@@ -87,7 +79,6 @@ const turnos: Record<Rol, number> = {
   cuidador: 0,
   medico: 0,
   familiar: 0,
-  comunidad: 0,
 };
 
 /** Simula POST /chat con latencia del orquestador. */

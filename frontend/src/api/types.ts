@@ -6,7 +6,7 @@
  */
 
 /** Los 5 roles de la matriz RBAC (spec §6) */
-export type Rol = 'paciente' | 'cuidador' | 'medico' | 'familiar' | 'comunidad';
+export type Rol = 'paciente' | 'cuidador' | 'medico' | 'familiar';
 
 // ---------- POST /chat ----------
 
