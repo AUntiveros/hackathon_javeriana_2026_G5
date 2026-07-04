@@ -1,3 +1,5 @@
+import pytest
+
 from backend.risk import evidence
 
 
@@ -17,6 +19,6 @@ def test_grado_ayuno():
 
 def test_grado_sedentarismo():
     assert evidence.grado_sedentarismo(1000, 1000) == 0.0
-    assert evidence.grado_sedentarismo(500, 1000) == 0.5
+    assert evidence.grado_sedentarismo(500, 1000) == pytest.approx(0.5)  # division float, no exacto
     assert evidence.grado_sedentarismo(100, 1000) == 1.0
     assert evidence.grado_sedentarismo(500, 0) == 0.0  # sin baseline: no alarma falsa
