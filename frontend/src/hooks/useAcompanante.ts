@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { chat, PATIENT_ID } from '../api/client';
+import { chat, confirmarActividad, getActividadesHoy, procesarRutina, rechazarActividad, PATIENT_ID } from '../api/client';
+import type { ActividadV2 } from '../api/types';
 
 /**
  * Modo acompañante (app Paciente): Tito siempre presente.
@@ -54,6 +55,10 @@ export function useAcompanante(): Acompanante {
   const wakeLockRef = useRef<{ release: () => Promise<void> } | null>(null);
   const timerSilencioRef = useRef<number | null>(null);
   const vivoRef = useRef(false);
+  const avisadasHoyRef = useRef<Set<number>>(new Set());
+  const avisadasFechaRef = useRef('');
+  const cooldownRef = useRef<Map<number, number>>(new Map());
+  const esperandoConfirmacionRef = useRef<number | null>(null);
 
   const setEstadoTotal = useCallback((e: EstadoAcompanante) => {
     estadoRef.current = e;
@@ -96,6 +101,75 @@ export function useAcompanante(): Acompanante {
       }
     }, SILENCIO_MS);
   }, [setEstadoTotal]);
+
+  // ---------- avisos proactivos por horario ----------
+
+  const anunciar = useCallback(
+    (mensaje: string) => {
+      setEstadoTotal('hablando');
+      setFrase(mensaje);
+      setEmocion('neutral');
+      hablar(mensaje, () => {
+        if (!vivoRef.current) return;
+        setEstadoTotal('atento');
+        setFrase('Lo escucho…');
+        armarTimerSilencio();
+        arrancarRec();
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hablar, armarTimerSilencio],
+  );
+
+  const revisarRutina = useCallback(async () => {
+    if (!vivoRef.current) return;
+    if (estadoRef.current === 'hablando' || estadoRef.current === 'pensando') return;
+
+    const hoy = new Date().toISOString().slice(0, 10);
+    if (avisadasFechaRef.current !== hoy) {
+      avisadasFechaRef.current = hoy;
+      avisadasHoyRef.current.clear();
+      cooldownRef.current.clear();
+    }
+
+    const { actividades } = await getActividadesHoy(PATIENT_ID);
+    const reciénLlegada = actividades.find(
+      (a) =>
+        a.estado === 'pendiente' &&
+        !avisadasHoyRef.current.has(a.id) &&
+        dentroDeVentana(a.hora, a.ventana_min),
+    );
+    if (reciénLlegada) {
+      avisadasHoyRef.current.add(reciénLlegada.id);
+      if (reciénLlegada.tipo === 'medicacion') esperandoConfirmacionRef.current = reciénLlegada.id;
+      anunciar(mensajeHoraLlegada(reciénLlegada));
+      return; // un aviso por ciclo: no saturar al paciente
+    }
+
+    const ahora = Date.now();
+    const { recordatorios } = await procesarRutina(PATIENT_ID);
+    const urgente = recordatorios.find(
+      (r) =>
+        r.accion !== 'soltar' &&
+        r.mensaje &&
+        r.actividad_id !== undefined &&
+        (cooldownRef.current.get(r.actividad_id) ?? 0) <= ahora,
+    );
+    if (urgente?.mensaje && urgente.actividad_id !== undefined) {
+      cooldownRef.current.set(urgente.actividad_id, ahora + 15 * 60_000);
+      if (urgente.nombre?.toLowerCase().includes('pastilla')) {
+        esperandoConfirmacionRef.current = urgente.actividad_id;
+      }
+      anunciar(urgente.mensaje);
+    }
+  }, [anunciar]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      void revisarRutina();
+    }, 90_000);
+    return () => window.clearInterval(id);
+  }, [revisarRutina]);
 
   // ---------- conversación ----------
 
@@ -277,6 +351,31 @@ export function useAcompanante(): Acompanante {
     apagar,
     hablarManual,
   };
+}
+
+function dentroDeVentana(hora: string, ventanaMin: number): boolean {
+  const [h, m] = hora.split(':').map(Number);
+  const ahora = new Date();
+  const programada = new Date(ahora);
+  programada.setHours(h, m, 0, 0);
+  const transcurridoMin = (ahora.getTime() - programada.getTime()) / 60_000;
+  return transcurridoMin >= 0 && transcurridoMin <= ventanaMin;
+}
+
+function mensajeHoraLlegada(a: ActividadV2): string {
+  const n = a.nombre.toLowerCase();
+  if (a.tipo === 'medicacion') return `Don Manuel, es hora de su ${n}. ¿La tomamos juntos ahora?`;
+  if (a.tipo === 'comida') return `Ya es hora de ${n}. ¿Comemos algo rico?`;
+  return `Le recuerdo con cariño: es hora de «${a.nombre}».`;
+}
+
+const RE_NO = /\b(no s[eé]|todav[ií]a no|a[uú]n no|no)\b/i;
+const RE_SI = /\b(s[ií]|ya|list[oa]|tomad[oa]|me la tom[eé])\b/i;
+
+function detectarConfirmacion(texto: string): 'si' | 'no' | null {
+  if (RE_NO.test(texto)) return 'no';
+  if (RE_SI.test(texto)) return 'si';
+  return null;
 }
 
 function detenerRec(ref: React.MutableRefObject<SpeechRecognitionInstance | null>) {

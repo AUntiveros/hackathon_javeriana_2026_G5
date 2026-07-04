@@ -112,10 +112,14 @@ export interface ActividadV2 {
   estado: 'pendiente' | 'confirmada' | 'omitida' | 'reprogramada';
   n_recordatorios: number;
   n_rechazos: number;
+  ventana_min: number;
+  detalle: Record<string, unknown>;
 }
 
 /** Salida del motor de criticidad (GET /actividades/:id/evaluar, POST /routine/:id/procesar) */
 export interface DecisionCriticidad {
+  actividad_id?: number;
+  nombre?: string;
   accion: 'soltar' | 'sugerir_suave' | 'recordar_firme' | 'escalar_cuidador';
   insistencia: number;
   alertar_cuidador: boolean;
