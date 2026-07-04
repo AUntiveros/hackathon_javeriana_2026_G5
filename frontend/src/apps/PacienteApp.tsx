@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import Nino, { type NinoMood } from '../components/Nino/Nino';
+import Tito, { type TitoMood } from '../components/Tito/Tito';
 import { useAcompanante, type EstadoAcompanante } from '../hooks/useAcompanante';
 import './paciente-app.css';
 
-const MOOD_POR_ESTADO: Record<EstadoAcompanante, NinoMood> = {
+const MOOD_POR_ESTADO: Record<EstadoAcompanante, TitoMood> = {
   apagado: 'idle',
   dormido: 'sleeping',
   atento: 'listening',
@@ -13,7 +13,7 @@ const MOOD_POR_ESTADO: Record<EstadoAcompanante, NinoMood> = {
 
 /**
  * App del Paciente — una sola pantalla, cero menús.
- * Nino siempre presente: duerme, despierta con "Nino", conversa.
+ * Tito siempre presente: duerme, despierta con "Tito", conversa.
  * Instalable como PWA (fullscreen, ícono propio, pantalla encendida).
  */
 export default function PacienteApp() {
@@ -36,18 +36,18 @@ export default function PacienteApp() {
     return () => clearInterval(id);
   }, []);
 
-  // manifest propio para instalar "Nino" como app independiente
+  // manifest propio para instalar "Tito" como app independiente
   useEffect(() => {
     const link = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
     const anterior = link?.href ?? '';
     if (link) link.href = '/manifest-paciente.webmanifest';
-    document.title = 'Nino — Mi compañero';
+    document.title = 'Tito — Mi compañero';
     return () => {
       if (link && anterior) link.href = anterior;
     };
   }, []);
 
-  const mood: NinoMood =
+  const mood: TitoMood =
     n.estado === 'hablando'
       ? n.emocion === 'feliz'
         ? 'happy'
@@ -71,7 +71,7 @@ export default function PacienteApp() {
 
       <section className="papp__centro" aria-live="polite">
         {n.frase && <div className="papp__burbuja">{n.frase}</div>}
-        <Nino mood={mood} speaking={n.estado === 'hablando'} size="min(70vw, 340px)" />
+        <Tito mood={mood} speaking={n.estado === 'hablando'} size="min(70vw, 340px)" />
         {n.dicho && (
           <p className="papp__dicho">“{n.dicho}”</p>
         )}
@@ -79,7 +79,7 @@ export default function PacienteApp() {
 
       {n.estado === 'apagado' ? (
         <button className="papp__encender" onClick={() => void n.iniciar()}>
-          🤗 Encender a Nino
+          Encender a Tito
         </button>
       ) : !n.sttSoportado ? (
         <div className="papp__manual">
@@ -92,8 +92,8 @@ export default function PacienteApp() {
                 setTextoManual('');
               }
             }}
-            placeholder="Escríbale a Nino…"
-            aria-label="Mensaje para Nino"
+            placeholder="Escríbale a Tito…"
+            aria-label="Mensaje para Tito"
           />
           <button
             onClick={() => {
@@ -108,8 +108,8 @@ export default function PacienteApp() {
         </div>
       ) : (
         <p className="papp__pista">
-          {n.estado === 'dormido' && 'Diga “Nino” para despertarme'}
-          {n.estado === 'atento' && '👂 Lo estoy escuchando'}
+          {n.estado === 'dormido' && 'Diga “Tito” para despertarme'}
+          {n.estado === 'atento' && 'Lo estoy escuchando'}
           {n.estado === 'pensando' && 'Un momentito…'}
           {n.estado === 'hablando' && ' '}
         </p>
@@ -120,7 +120,10 @@ export default function PacienteApp() {
       {/* apagado discreto para el cuidador, no para el paciente */}
       {n.estado !== 'apagado' && (
         <button className="papp__apagar" onClick={n.apagar} aria-label="Apagar modo acompañante">
-          ⏻
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M12 3v8" />
+            <path d="M6.5 6.5a8 8 0 1 0 11 0" />
+          </svg>
         </button>
       )}
     </main>

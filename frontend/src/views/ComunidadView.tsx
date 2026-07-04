@@ -33,7 +33,7 @@ export default function ComunidadView() {
               <div className="comunidad__info">
                 <strong>{p.nombre} · {p.edad}</strong>
                 <small>{p.intereses.join(' · ')}</small>
-                <span className="comunidad__afinidad">{p.afinidad}% afinidad con Don José</span>
+                <span className="comunidad__afinidad">{p.afinidad}% afinidad con Don Manuel</span>
               </div>
               {invitados.includes(p.id) ? (
                 <span className="comunidad__ok">✓ Invitado</span>
@@ -52,7 +52,7 @@ export default function ComunidadView() {
         <p className="comunidad__evento">
           <strong>Tarde de música criolla</strong> — sábado 4 pm, local comunal.
           <br />
-          Don José y 5 vecinos confirmados.
+          Don Manuel y 5 vecinos confirmados.
         </p>
       </section>
     </div>

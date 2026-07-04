@@ -26,7 +26,7 @@ export default function MedicoView() {
 
       <section className="tarjeta">
         <h2>Señales clínicas del habla</h2>
-        <p className="medico__meta">Paciente: Don José · 78a · M · escolaridad primaria (ajuste SES activo)</p>
+        <p className="medico__meta">Paciente: Don Manuel · 78a · M · escolaridad primaria (ajuste SES activo)</p>
         <div className="medico__tabla-wrap">
           <table className="medico__tabla">
             <thead>

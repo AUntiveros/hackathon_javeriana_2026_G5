@@ -11,7 +11,7 @@ export default function FamiliarView() {
         <span className="familiar__emoji" aria-hidden="true">😊</span>
         <div>
           <h2>Tu papá está bien hoy</h2>
-          <p>Durmió tranquilo, desayunó completo y estuvo conversador con Nino.</p>
+          <p>Durmió tranquilo, desayunó completo y estuvo conversador con Tito.</p>
         </div>
       </section>
 

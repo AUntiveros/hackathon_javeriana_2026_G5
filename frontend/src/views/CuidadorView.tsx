@@ -37,7 +37,7 @@ export default function CuidadorView() {
   return (
     <div className="vista">
       <section className="tarjeta">
-        <h2>Agenda de hoy — Don José</h2>
+        <h2>Agenda de hoy — Don Manuel</h2>
         {cargando && <p className="cargando">Cargando agenda…</p>}
         <ul className="agenda">
           {agenda.map((e) => (

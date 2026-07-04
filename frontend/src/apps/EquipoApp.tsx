@@ -7,8 +7,8 @@ import ComunidadView from '../views/ComunidadView';
 import type { Rol } from '../api/types';
 
 const SUBTITULO: Partial<Record<Rol, string>> = {
-  cuidador: 'Cuidador aumentado — Don José',
-  medico: 'Señales clínicas del habla — Don José',
+  cuidador: 'Cuidador aumentado — Don Manuel',
+  medico: 'Señales clínicas del habla — Don Manuel',
   familiar: 'Cómo está tu papá hoy',
   comunidad: 'Red de pares — club de adulto mayor',
 };
@@ -23,7 +23,7 @@ export default function EquipoApp() {
   return (
     <main className="app">
       <header className="app__header">
-        <h1>Nino · Equipo</h1>
+        <h1>Tito · Equipo</h1>
         <p>{SUBTITULO[rol]}</p>
       </header>
 

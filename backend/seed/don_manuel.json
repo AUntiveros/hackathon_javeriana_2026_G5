@@ -1,8 +1,8 @@
 {
   "patient": {
     "id": 1,
-    "nombre": "José Mamani Quispe",
-    "apodo": "Don José",
+    "nombre": "Manuel Mamani Quispe",
+    "apodo": "Don Manuel",
     "edad": 78,
     "sexo": "M",
     "ses_metadata": {

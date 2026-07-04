@@ -11,14 +11,14 @@ import type {
 } from './types';
 
 /* ============================================================
-   Datos semilla de "Don José" — coherentes con backend/seed (T2):
+   Datos semilla de "Don Manuel" — coherentes con backend/seed (T2):
    78 años, ex-agricultor, escolaridad primaria, quechua-español,
    hija Rosa, nieta Sofía. 30 días de tendencia leve de deterioro.
    ============================================================ */
 
-export const DON_JOSE: Patient = {
+export const DON_MANUEL: Patient = {
   id: 1,
-  nombre: 'Don José',
+  nombre: 'Don Manuel',
   edad: 78,
   sexo: 'M',
 };
@@ -27,7 +27,7 @@ export const DON_JOSE: Patient = {
 
 const RESPUESTAS_POR_ROL: Record<Rol, ChatResponse[]> = {
   paciente: [
-    { respuesta: '¡Hola Don José! Qué gusto escucharlo. ¿Cómo amaneció hoy?', emocion: 'feliz' },
+    { respuesta: '¡Hola Don Manuel! Qué gusto escucharlo. ¿Cómo amaneció hoy?', emocion: 'feliz' },
     {
       respuesta: 'Hoy toca su pastilla de las 9. Ya le aviso a Rosa que usted está muy bien.',
       emocion: 'neutral',
@@ -46,7 +46,7 @@ const RESPUESTAS_POR_ROL: Record<Rol, ChatResponse[]> = {
   cuidador: [
     {
       respuesta:
-        'Don José durmió bien y ya desayunó. Pendiente: pastilla de las 9 (donepezilo 10 mg). Sugerencia: hoy evita preguntarle "¿te acuerdas?"; mejor cuéntale tú la anécdota y deja que él la complete.',
+        'Don Manuel durmió bien y ya desayunó. Pendiente: pastilla de las 9 (donepezilo 10 mg). Sugerencia: hoy evita preguntarle "¿te acuerdas?"; mejor cuéntale tú la anécdota y deja que él la complete.',
       emocion: 'neutral',
     },
     {
@@ -75,7 +75,7 @@ const RESPUESTAS_POR_ROL: Record<Rol, ChatResponse[]> = {
   comunidad: [
     {
       respuesta:
-        'Hay 2 vecinos del club de adulto mayor con intereses parecidos a los de Don José: don Ernesto (también ex-agricultor) y doña Carmen (fan de la música criolla). ¿Coordino un encuentro para el sábado?',
+        'Hay 2 vecinos del club de adulto mayor con intereses parecidos a los de Don Manuel: don Ernesto (también ex-agricultor) y doña Carmen (fan de la música criolla). ¿Coordino un encuentro para el sábado?',
       emocion: 'feliz',
       tools_usadas: ['matching_pares'],
     },
@@ -102,7 +102,7 @@ export async function chat(req: ChatRequest): Promise<ChatResponse> {
 // ---------- GET /routine/1/today ----------
 
 const RUTINA_HOY: RoutineEvent[] = [
-  { id: 1, hora: '08:00', tipo: 'conversacion', titulo: 'Check-in de voz', detalle: 'Nino saluda y conversa 5 min (extrae biomarcadores)', estado: 'hecho' },
+  { id: 1, hora: '08:00', tipo: 'conversacion', titulo: 'Check-in de voz', detalle: 'Tito saluda y conversa 5 min (extrae biomarcadores)', estado: 'hecho' },
   { id: 2, hora: '09:00', tipo: 'medicacion', titulo: 'Donepezilo 10 mg', detalle: 'Con el desayuno, vaso de agua completo', estado: 'pendiente' },
   { id: 3, hora: '10:30', tipo: 'actividad', titulo: 'Reminiscencia musical', detalle: 'Valses de Chabuca Granda — no repetida en 5 días', estado: 'pendiente' },
   { id: 4, hora: '13:00', tipo: 'medicacion', titulo: 'Memantina 10 mg', detalle: 'Con el almuerzo', estado: 'pendiente' },

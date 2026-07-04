@@ -55,7 +55,7 @@ def _mensaje(actividad: Actividad, accion: str) -> str:
         return f"Cuando usted quiera, sería lindo hacer «{actividad.nombre}». ¿Le provoca?"
     if accion == "recordar_firme":
         if actividad.tipo == "medicacion":
-            return f"Don José, es momento de su {n}. ¿La tomamos juntos ahora?"
+            return f"Don Manuel, es momento de su {n}. ¿La tomamos juntos ahora?"
         if actividad.tipo == "comida":
             return f"Ya es hora de {n}. ¿Comemos algo rico?"
         return f"Le recuerdo con cariño: es hora de «{actividad.nombre}». ¿Lo hacemos?"

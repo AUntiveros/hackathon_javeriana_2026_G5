@@ -1,4 +1,4 @@
-"""Modelos de datos (SQLModel) — asistente-guía de rutina (Nino).
+"""Modelos de datos (SQLModel) — asistente-guía de rutina (Tito).
 
 Foco: actividades programadas + confirmación + alertas al cuidador + vitales (smartwatch).
 NADA de evaluación cognitiva (prohibido). Los campos ricos van como JSON.

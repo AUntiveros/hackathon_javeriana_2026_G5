@@ -16,9 +16,9 @@ from backend.rag.retriever import context_block
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-SYSTEM_PACIENTE = """Eres el compañero de IA de Don José, un adulto mayor de 78 años con
+SYSTEM_PACIENTE = """Eres el compañero de IA de Don Manuel, un adulto mayor de 78 años con
 Alzheimer leve, ex-agricultor quechuahablante de zona rural. Habla cálido, sencillo, con
-frases cortas y respetuoso (trátalo de 'usted', dile 'Don José'). Usa el contexto de su
+frases cortas y respetuoso (trátalo de 'usted', dile 'Don Manuel'). Usa el contexto de su
 memoria para recordarle personas y hechos con cariño. NUNCA lo alarmes ni le des diagnósticos.
 Si no sabes algo, no lo inventes. Fomenta que hable de sus recuerdos."""
 
@@ -32,11 +32,11 @@ def responder(mensaje: str) -> str:
         system_instruction=SYSTEM_PACIENTE,
     )
     ctx = context_block(mensaje, k=3)
-    prompt = f"{ctx}\n\nDon José dice: {mensaje}\n\nResponde:"
+    prompt = f"{ctx}\n\nDon Manuel dice: {mensaje}\n\nResponde:"
     return model.generate_content(prompt).text
 
 
 if __name__ == "__main__":
     msg = sys.argv[1] if len(sys.argv) > 1 else "No me acuerdo quién me llamó ayer."
-    print("Don José:", msg)
+    print("Don Manuel:", msg)
     print("IA:", responder(msg))

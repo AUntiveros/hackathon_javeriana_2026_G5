@@ -1,4 +1,4 @@
-"""API FastAPI — Nino: asistente-guía de rutina (RBAC + criticidad + confirmación + alertas).
+"""API FastAPI — Tito: asistente-guía de rutina (RBAC + criticidad + confirmación + alertas).
 
 Arranque:
     python -m backend.db.seed          # paciente + rutina del día
@@ -18,7 +18,7 @@ from backend.routine import engine as routine
 from backend.ses import personalizer
 from backend.vitals import estimate
 
-app = FastAPI(title="Nino — API asistente-guía de rutina")
+app = FastAPI(title="Tito — API asistente-guía de rutina")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 

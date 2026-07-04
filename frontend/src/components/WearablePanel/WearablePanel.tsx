@@ -11,7 +11,7 @@ export default function WearablePanel() {
   return (
     <section className="tarjeta wearable">
       <div className="wearable__cabecera">
-        <h2>⌚ Wearable de Don José</h2>
+        <h2>⌚ Wearable de Don Manuel</h2>
         <span className={`wearable__estado wearable__estado--${w.modo}`}>
           {w.modo === 'desconectado' && 'Sin conexión'}
           {w.modo === 'ble' && '● BLE en vivo'}
@@ -21,7 +21,7 @@ export default function WearablePanel() {
 
       {w.sos && (
         <div className="wearable__sos" role="alert">
-          🆘 <strong>Botón SOS presionado.</strong> Llama a Don José de inmediato.
+          🆘 <strong>Botón SOS presionado.</strong> Llama a Don Manuel de inmediato.
           <button onClick={w.descartarSos}>Atendido</button>
         </div>
       )}

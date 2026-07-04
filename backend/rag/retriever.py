@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 CHROMA_PATH = Path(__file__).resolve().parents[1] / "chroma_db"
-COLLECTION = "pkg_don_jose"
+COLLECTION = "pkg_don_manuel"
 
 
 def _embed_query(text: str):

@@ -4,7 +4,7 @@ import './App.css';
 
 /**
  * Dos apps, un deploy:
- *   /paciente → app del Paciente (pantalla única, PWA instalable, "oye Nino")
+ *   /paciente → app del Paciente (pantalla única, PWA instalable, "oye Tito")
  *   /         → app del Equipo (cuidador, médico, familiar, comunidad)
  */
 export default function App() {

@@ -2,26 +2,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { chat, PATIENT_ID } from '../api/client';
 
 /**
- * Modo acompañante (app Paciente): Nino siempre presente.
+ * Modo acompañante (app Paciente): Tito siempre presente.
  *
  * Máquina de estados:
  *   apagado → (botón) → dormido ⇄ atento → pensando → hablando → atento
- *                         ↑ wake word "Nino"          silencio 18s ↓
+ *                         ↑ wake word "Tito"          silencio 18s ↓
  *                         └──────────────────────────────────────────┘
  *
- * - dormido: micrófono abierto solo para la palabra clave ("Nino" / "oye Nino").
+ * - dormido: micrófono abierto solo para la palabra clave ("Tito" / "oye Tito").
  * - atento: todo lo que diga el paciente va al orquestador.
- * - Mientras Nino habla, el micrófono se pausa (no se escucha a sí mismo).
+ * - Mientras Tito habla, el micrófono se pausa (no se escucha a sí mismo).
  * - Wake Lock mantiene la pantalla encendida (teléfono en atril).
  *
  * Límite conocido: web no escucha con pantalla bloqueada/app cerrada.
- * El "oye Nino" desatendido de verdad va en la app nativa (Expo dev build
+ * El "oye Tito" desatendido de verdad va en la app nativa (Expo dev build
  * + Porcupine) y en el dispositivo de mesa — ver docs/plan.
  */
 
 export type EstadoAcompanante = 'apagado' | 'dormido' | 'atento' | 'pensando' | 'hablando';
 
-const WAKE_REGEX = /\b(oye\s+)?(nino|niño|nińo|nina|niña)\b/i;
+const WAKE_REGEX = /\b(oye\s+)?(tito)\b/i;
 const SILENCIO_MS = 18_000;
 
 const SpeechRecognitionImpl =
@@ -31,7 +31,7 @@ const SpeechRecognitionImpl =
 
 export interface Acompanante {
   estado: EstadoAcompanante;
-  frase: string; // lo que Nino dice / indicación en pantalla
+  frase: string; // lo que Tito dice / indicación en pantalla
   dicho: string; // último transcript del paciente
   emocion: 'neutral' | 'feliz' | 'preocupado';
   error: string | null;
@@ -91,7 +91,7 @@ export function useAcompanante(): Acompanante {
     timerSilencioRef.current = window.setTimeout(() => {
       if (estadoRef.current === 'atento') {
         setEstadoTotal('dormido');
-        setFrase('Estoy aquí. Diga “Nino” cuando me necesite.');
+        setFrase('Estoy aquí. Diga “Tito” cuando me necesite.');
         setDicho('');
       }
     }, SILENCIO_MS);
@@ -150,12 +150,12 @@ export function useAcompanante(): Acompanante {
         if (!m) return; // ignora conversación ambiente
         const resto = texto.slice((m.index ?? 0) + m[0].length).trim();
         if (resto.length > 2) {
-          void conversar(resto); // "Nino, ¿qué día es hoy?"
+          void conversar(resto); // "Tito, ¿qué día es hoy?"
         } else {
           setEstadoTotal('atento');
-          setFrase('¿Dígame, Don José?');
+          setFrase('¿Dígame, Don Manuel?');
           setDicho('');
-          hablar('¿Dígame, Don José?', () => {
+          hablar('¿Dígame, Don Manuel?', () => {
             if (vivoRef.current && estadoRef.current === 'atento') armarTimerSilencio();
           });
         }
@@ -177,7 +177,7 @@ export function useAcompanante(): Acompanante {
     rec.onerror = (e: Event) => {
       const err = (e as unknown as { error?: string }).error;
       if (err === 'not-allowed' || err === 'service-not-allowed') {
-        setError('Permiso de micrófono denegado. Active el micrófono para hablar con Nino.');
+        setError('Permiso de micrófono denegado. Active el micrófono para hablar con Tito.');
         setEstadoTotal('apagado');
         vivoRef.current = false;
       }
@@ -230,15 +230,15 @@ export function useAcompanante(): Acompanante {
     }
 
     setEstadoTotal('dormido');
-    setFrase('Diga “Nino” y conversamos.');
-    const saludo = '¡Hola Don José! Aquí estoy, acompañándolo. Diga mi nombre, Nino, cuando quiera conversar.';
+    setFrase('Diga “Tito” y conversamos.');
+    const saludo = '¡Hola Don Manuel! Aquí estoy, acompañándolo. Diga mi nombre, Tito, cuando quiera conversar.';
     setEstadoTotal('hablando');
     setFrase(saludo);
     setEmocion('feliz');
     hablar(saludo, () => {
       if (!vivoRef.current) return;
       setEstadoTotal('dormido');
-      setFrase('Diga “Nino” y conversamos.');
+      setFrase('Diga “Tito” y conversamos.');
       arrancarRec();
     });
   }, [hablar, arrancarRec, pedirWakeLock, setEstadoTotal]);

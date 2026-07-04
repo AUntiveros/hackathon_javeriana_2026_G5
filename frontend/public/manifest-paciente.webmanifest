@@ -1,7 +1,7 @@
 {
-  "name": "Nino — Mi compañero",
-  "short_name": "Nino",
-  "description": "Compañero de voz para Don José. Diga «Nino» y conversamos.",
+  "name": "Tito — Mi compañero",
+  "short_name": "Tito",
+  "description": "Compañero de voz para Don Manuel. Diga «Tito» y conversamos.",
   "id": "/paciente",
   "start_url": "/paciente",
   "scope": "/paciente",

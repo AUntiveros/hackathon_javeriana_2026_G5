@@ -11,7 +11,7 @@ from sqlmodel import select
 
 from backend.db.models import Actividad, Patient, get_session, init_db
 
-SEED_PATH = Path(__file__).resolve().parents[1] / "seed" / "don_jose.json"
+SEED_PATH = Path(__file__).resolve().parents[1] / "seed" / "don_manuel.json"
 
 
 def _hoy() -> str:

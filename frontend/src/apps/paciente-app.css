@@ -15,7 +15,7 @@
   transition: background 0.6s ease;
 }
 
-/* fondo se atenúa cuando Nino duerme */
+/* fondo se atenúa cuando Tito duerme */
 .papp--dormido {
   filter: saturate(0.85) brightness(0.97);
 }
@@ -144,6 +144,8 @@
   border-radius: 50%;
   background: transparent;
   color: #C9B8A8;
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }

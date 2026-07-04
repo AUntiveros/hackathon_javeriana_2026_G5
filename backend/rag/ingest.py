@@ -1,6 +1,6 @@
 """Ingesta del Personal Knowledge Graph (PKG) a ChromaDB.
 
-Prototipo de RAG. Carga los nodos del PKG de Don José como documentos con embeddings.
+Prototipo de RAG. Carga los nodos del PKG de Don Manuel como documentos con embeddings.
 Embeddings: Gemini text-embedding-004 si hay GEMINI_API_KEY; si no, sentence-transformers local.
 
 Uso:
@@ -15,9 +15,9 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-SEED_PATH = Path(__file__).resolve().parents[1] / "seed" / "don_jose.json"
+SEED_PATH = Path(__file__).resolve().parents[1] / "seed" / "don_manuel.json"
 CHROMA_PATH = Path(__file__).resolve().parents[1] / "chroma_db"
-COLLECTION = "pkg_don_jose"
+COLLECTION = "pkg_don_manuel"
 
 
 def get_embedder():
