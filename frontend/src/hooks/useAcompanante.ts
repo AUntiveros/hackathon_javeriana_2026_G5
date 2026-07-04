@@ -59,6 +59,7 @@ export function useAcompanante(): Acompanante {
   const avisadasFechaRef = useRef('');
   const cooldownRef = useRef<Map<number, number>>(new Map());
   const esperandoConfirmacionRef = useRef<number | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const setEstadoTotal = useCallback((e: EstadoAcompanante) => {
     estadoRef.current = e;
@@ -77,14 +78,19 @@ export function useAcompanante(): Acompanante {
       };
       setTimeout(done, Math.max(4000, texto.length * 90));
       if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
+
       const u = new SpeechSynthesisUtterance(texto);
       u.lang = 'es-ES';
       u.rate = 0.92;
       u.pitch = 1.15;
       u.onend = done;
       u.onerror = done;
-      window.speechSynthesis.speak(u);
+      utteranceRef.current = u; // iOS Safari: sin referencia viva, a veces se garbage-collecta a mitad de la frase
+
+      window.speechSynthesis.cancel();
+      // iOS Safari: speak() justo después de cancel() en el mismo tick a veces no suena;
+      // un pequeño delay lo evita de forma confiable (bug conocido de WebKit)
+      setTimeout(() => window.speechSynthesis.speak(u), 60);
     },
     [],
   );
@@ -312,12 +318,12 @@ export function useAcompanante(): Acompanante {
   const iniciar = useCallback(async () => {
     setError(null);
     vivoRef.current = true;
-    await pedirWakeLock();
 
     if (!SpeechRecognitionImpl) {
       // sin STT: modo botón por turno (hablarManual)
       setEstadoTotal('atento');
       setFrase('Su navegador no escucha solo. Use el botón para hablar conmigo.');
+      await pedirWakeLock();
       return;
     }
 
@@ -327,12 +333,15 @@ export function useAcompanante(): Acompanante {
     setEstadoTotal('hablando');
     setFrase(saludo);
     setEmocion('feliz');
+    // hablar() se dispara ANTES de cualquier await: iOS Safari solo desbloquea
+    // speechSynthesis si speak() sale sincrónico del gesto de tap del botón.
     hablar(saludo, () => {
       if (!vivoRef.current) return;
       setEstadoTotal('dormido');
       setFrase('Diga “Tito” y conversamos.');
       arrancarRec();
     });
+    await pedirWakeLock();
   }, [hablar, arrancarRec, pedirWakeLock, setEstadoTotal]);
 
   const apagar = useCallback(() => {

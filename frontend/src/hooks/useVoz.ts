@@ -25,6 +25,7 @@ export interface UseVoz {
 export function useVoz(): UseVoz {
   const [escuchando, setEscuchando] = useState(false);
   const recRef = useRef<SpeechRecognitionInstance | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(
     () => () => {
@@ -46,14 +47,18 @@ export function useVoz(): UseVoz {
     setTimeout(fin, Math.max(4000, texto.length * 90));
 
     if (!ttsSoportado) return;
-    window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(texto);
     u.lang = 'es-ES';
     u.rate = 0.92; // pausado, amable
     u.pitch = 1.15;
     u.onend = fin;
     u.onerror = fin;
-    window.speechSynthesis.speak(u);
+    utteranceRef.current = u; // iOS Safari: sin referencia viva, a veces se garbage-collecta a mitad de la frase
+
+    window.speechSynthesis.cancel();
+    // iOS Safari: speak() justo después de cancel() en el mismo tick a veces no suena;
+    // un pequeño delay lo evita de forma confiable (bug conocido de WebKit)
+    setTimeout(() => window.speechSynthesis.speak(u), 60);
   }, []);
 
   const escuchar = useCallback((): Promise<string> => {
