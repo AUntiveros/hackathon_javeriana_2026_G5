@@ -3,7 +3,7 @@ paciente en un P(Descompensacion) único vía red fuzzy-bayesiana, SIN reemplaza
 motor de criticidad por-actividad existente (backend/criticality/engine.py sigue
 decidiendo insistencia individual, edge, sin cambios).
 """
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlmodel import select
 
@@ -75,10 +75,30 @@ def _calcular_evidencias(patient_id: int) -> tuple[float, float, float]:
 
 
 def _crear_alerta(patient_id: int, tier: str, p: float) -> None:
+    """Crea (o actualiza) la alerta de riesgo global del paciente.
+
+    Idempotente: si ya existe una alerta de riesgo global sin atender para este
+    paciente, se actualiza in-place (nivel/motivo/timestamp) en vez de insertar
+    una fila nueva — evita spam de alertas duplicadas si el endpoint se llama
+    repetidamente (cron/polling) mientras el cuidador no atiende la anterior.
+    """
     nivel = "alto" if tier in ("agudo_moderado", "crisis") else "medio"
+    motivo = f"Riesgo global {tier}: P(descompensacion)={p:.2f}"
     with get_session() as s:
-        s.add(Alerta(patient_id=patient_id, nivel=nivel,
-                      motivo=f"Riesgo global {tier}: P(descompensacion)={p:.2f}"))
+        existente = s.exec(
+            select(Alerta).where(
+                Alerta.patient_id == patient_id,
+                Alerta.atendida == False,  # noqa: E712
+                Alerta.motivo.startswith("Riesgo global "),
+            )
+        ).first()
+        if existente:
+            existente.nivel = nivel
+            existente.motivo = motivo
+            existente.timestamp = datetime.utcnow()
+            s.add(existente)
+        else:
+            s.add(Alerta(patient_id=patient_id, nivel=nivel, motivo=motivo))
         s.commit()
 
 

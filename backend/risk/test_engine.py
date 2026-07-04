@@ -44,3 +44,21 @@ def test_evaluar_riesgo_global_no_crea_alerta_si_normal(monkeypatch):
         alertas = s.exec(select(Alerta).where(Alerta.patient_id == PID)).all()
     assert len(alertas) == 0
     _limpiar()
+
+
+def test_evaluar_riesgo_global_es_idempotente_no_duplica_alerta(monkeypatch):
+    """Llamar el endpoint dos veces seguidas (cron/polling) con el mismo riesgo alto
+    no debe crear una segunda alerta sin atender — solo debe existir una."""
+    init_db()
+    _limpiar()
+    try:
+        monkeypatch.setattr(engine, "_calcular_evidencias", lambda pid: (0.9, 0.9, 0.9))
+        engine.evaluar_riesgo_global(PID)
+        engine.evaluar_riesgo_global(PID)
+        with get_session() as s:
+            alertas = s.exec(
+                select(Alerta).where(Alerta.patient_id == PID, Alerta.atendida == False)  # noqa: E712
+            ).all()
+        assert len(alertas) == 1
+    finally:
+        _limpiar()

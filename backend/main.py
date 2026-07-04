@@ -17,7 +17,6 @@ from backend.orchestrator.router import route
 from backend.routine import engine as routine
 from backend.ses import personalizer
 from backend.vitals import estimate
-from backend.risk import engine as risk_engine
 
 app = FastAPI(title="Nino — API asistente-guía de rutina")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -188,8 +187,13 @@ def reporte_jornada(pid: int):
 
 
 # ---------- Riesgo global (fuzzy-bayesiano, capa cloud) ----------
+# Import perezoso a propósito: esta capa depende de pgmpy y construye la red
+# bayesiana al importarse (backend/risk/bayes_engine.py). Si eso falla, NO debe
+# tumbar el arranque de toda la API (rutina/confirmación/vitales/chat) — solo
+# esta ruta específica falla con un 500 normal de FastAPI.
 @app.post("/riesgo/{pid}/evaluar")
 def riesgo_evaluar(pid: int):
+    from backend.risk import engine as risk_engine
     return risk_engine.evaluar_riesgo_global(pid)
 
 
