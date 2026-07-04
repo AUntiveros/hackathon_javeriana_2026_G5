@@ -12,3 +12,4 @@ ml/data/
 ml/results/*.png
 .venv/
 venv/
+.worktrees/
