@@ -43,7 +43,8 @@ def plan_dia(patient_id: int = 1) -> dict:
 def _act_dict(a: Actividad) -> dict:
     return {"id": a.id, "nombre": a.nombre, "tipo": a.tipo, "hora": a.hora,
             "criticidad": a.criticidad_base, "estado": a.estado,
-            "n_recordatorios": a.n_recordatorios, "n_rechazos": a.n_rechazos}
+            "n_recordatorios": a.n_recordatorios, "n_rechazos": a.n_rechazos,
+            "ventana_min": a.ventana_min, "detalle": a.detalle}
 
 
 def _mensaje(actividad: Actividad, accion: str) -> str:
