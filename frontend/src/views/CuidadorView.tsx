@@ -1,57 +1,88 @@
 import { useEffect, useState } from 'react';
 import TwinDashboard from '../components/TwinDashboard/TwinDashboard';
 import WearablePanel from '../components/WearablePanel/WearablePanel';
-import { getRoutineToday, logMedicacion, PATIENT_ID } from '../api/client';
-import type { RoutineEvent, TipoEvento } from '../api/types';
+import { atenderAlerta, confirmarActividad, getActividadesHoy, getAlertas, PATIENT_ID } from '../api/client';
+import type { ActividadV2, AlertaCuidador } from '../api/types';
 import './cuidador.css';
 
-const ICONO: Record<TipoEvento, string> = {
+const ICONO: Record<ActividadV2['tipo'], string> = {
   medicacion: '💊',
-  actividad: '🎨',
-  conversacion: '💬',
-  alerta: '🔔',
+  comida: '🍽️',
   cita: '🏥',
-  conexion: '📞',
+  autocuidado: '🧼',
+  hobby: '🎨',
+  actividad: '🚶',
 };
 
 /**
- * F4 — Vista Cuidador: agenda del día (motor de rutina T5),
- * log de medicación y alertas del gemelo.
+ * Vista Cuidador: agenda del día (motor de rutina v2) + alertas del motor de criticidad.
  */
 export default function CuidadorView() {
-  const [agenda, setAgenda] = useState<RoutineEvent[]>([]);
+  const [agenda, setAgenda] = useState<ActividadV2[]>([]);
+  const [alertas, setAlertas] = useState<AlertaCuidador[]>([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    void getRoutineToday(PATIENT_ID).then((a) => {
-      setAgenda(a);
+    void Promise.all([getActividadesHoy(PATIENT_ID), getAlertas(PATIENT_ID)]).then(([act, al]) => {
+      setAgenda(act.actividades);
+      setAlertas(al);
       setCargando(false);
     });
+    const id = window.setInterval(() => {
+      void getAlertas(PATIENT_ID).then(setAlertas);
+    }, 60_000);
+    return () => window.clearInterval(id);
   }, []);
 
   const marcarHecho = async (id: number) => {
-    setAgenda((prev) => prev.map((e) => (e.id === id ? { ...e, estado: 'hecho' } : e)));
-    await logMedicacion(id);
+    setAgenda((prev) => prev.map((a) => (a.id === id ? { ...a, estado: 'confirmada' } : a)));
+    await confirmarActividad(id);
   };
+
+  const marcarAtendida = async (id: number) => {
+    setAlertas((prev) => prev.map((a) => (a.id === id ? { ...a, atendida: true } : a)));
+    await atenderAlerta(id);
+  };
+
+  const pendientes = alertas.filter((a) => !a.atendida);
 
   return (
     <div className="vista">
+      {pendientes.length > 0 && (
+        <section className="tarjeta alertas">
+          <h2>Alertas</h2>
+          <ul className="alertas__lista">
+            {pendientes.map((a) => (
+              <li key={a.id} className={`alertas__item alertas__item--${a.nivel}`}>
+                <span className="alertas__motivo">{a.motivo}</span>
+                <button className="alertas__boton" onClick={() => void marcarAtendida(a.id)}>
+                  Atender
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="tarjeta">
         <h2>Agenda de hoy — Don Manuel</h2>
         {cargando && <p className="cargando">Cargando agenda…</p>}
         <ul className="agenda">
-          {agenda.map((e) => (
-            <li key={e.id} className={`agenda__item agenda__item--${e.estado}`}>
-              <span className="agenda__hora">{e.hora}</span>
-              <span className="agenda__icono" aria-hidden="true">{ICONO[e.tipo]}</span>
+          {agenda.map((a) => (
+            <li
+              key={a.id}
+              className={`agenda__item agenda__item--${a.estado === 'confirmada' ? 'hecho' : 'pendiente'}`}
+            >
+              <span className="agenda__hora">{a.hora}</span>
+              <span className="agenda__icono" aria-hidden="true">{ICONO[a.tipo]}</span>
               <span className="agenda__cuerpo">
-                <strong>{e.titulo}</strong>
-                <small>{e.detalle}</small>
+                <strong>{a.nombre}</strong>
+                <small>{a.tipo} · criticidad {(a.criticidad * 100).toFixed(0)}%</small>
               </span>
-              {e.estado === 'hecho' ? (
+              {a.estado === 'confirmada' ? (
                 <span className="agenda__hecho" aria-label="hecho">✓</span>
               ) : (
-                <button className="agenda__boton" onClick={() => void marcarHecho(e.id)}>
+                <button className="agenda__boton" onClick={() => void marcarHecho(a.id)}>
                   Hecho
                 </button>
               )}
