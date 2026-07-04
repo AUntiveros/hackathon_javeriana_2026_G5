@@ -234,6 +234,24 @@ export function useAcompanante(): Acompanante {
           });
         }
       } else if (est === 'atento') {
+        const actId = esperandoConfirmacionRef.current;
+        if (actId !== null) {
+          const decision = detectarConfirmacion(texto);
+          if (decision === 'si') {
+            esperandoConfirmacionRef.current = null;
+            void confirmarActividad(actId);
+            anunciar('¡Qué bien! Anotado, gracias por avisarme.');
+            return;
+          }
+          if (decision === 'no') {
+            esperandoConfirmacionRef.current = null;
+            void rechazarActividad(actId);
+            cooldownRef.current.set(actId, Date.now() + 15 * 60_000);
+            anunciar('Está bien, no se preocupe. Se lo recuerdo en un ratito.');
+            return;
+          }
+          esperandoConfirmacionRef.current = null; // no coincide: sigue como conversación normal
+        }
         void conversar(texto);
       }
     };
