@@ -17,6 +17,7 @@ from backend.orchestrator.router import route
 from backend.routine import engine as routine
 from backend.ses import personalizer
 from backend.vitals import estimate
+from backend.risk import engine as risk_engine
 
 app = FastAPI(title="Nino — API asistente-guía de rutina")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -184,6 +185,12 @@ def reporte_jornada(pid: int):
         "alertas_pendientes": [{"id": a.id, "nivel": a.nivel, "motivo": a.motivo} for a in alertas],
         "ultimo_vital": ({"hr": v.hr, "bp_sys_est": v.bp_sys_est, "bp_dia_est": v.bp_dia_est} if v else None),
     }
+
+
+# ---------- Riesgo global (fuzzy-bayesiano, capa cloud) ----------
+@app.post("/riesgo/{pid}/evaluar")
+def riesgo_evaluar(pid: int):
+    return risk_engine.evaluar_riesgo_global(pid)
 
 
 # ---------- Personalización cultural (no cognitiva) ----------
