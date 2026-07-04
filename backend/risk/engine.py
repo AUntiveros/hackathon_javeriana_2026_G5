@@ -43,7 +43,11 @@ def _pasos_hoy_y_baseline(patient_id: int) -> tuple[int, int]:
     de_hoy = [v for v in vitals if v.timestamp.date().isoformat() == hoy]
     pasados = [v for v in vitals if desde <= v.timestamp.date().isoformat() < hoy]
     pasos_hoy = max((v.pasos for v in de_hoy), default=0)
-    baseline = round(sum(v.pasos for v in pasados) / len(pasados)) if pasados else pasos_hoy
+    por_dia: dict[str, int] = {}
+    for v in pasados:
+        dia = v.timestamp.date().isoformat()
+        por_dia[dia] = max(por_dia.get(dia, 0), v.pasos)
+    baseline = round(sum(por_dia.values()) / len(por_dia)) if por_dia else pasos_hoy
     return pasos_hoy, baseline
 
 
